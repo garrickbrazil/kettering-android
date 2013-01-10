@@ -1,0 +1,39 @@
+<resources>
+
+    <string name="app_name">Kettering Application</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Kettering Application</string>
+    <string name="signinButtonText">Sign in</string>
+    <string name="signoutButtonText">Sign out</string>
+    <string name="backText">Back</string>
+    <string name="usernameHint">Username</string>
+    <string name="passwordHint">Password</string>
+    <string name="scheduleRow">15px</string>
+    <string name="scheduleRowHeader">20dp</string>
+    
+    <string name="search_type_prompt">Type</string>
+    <string-array name="search_options">
+        <item>Faculty</item>
+        <item>Student</item>
+    </string-array>
+    
+    <string-array name="library_search_options">
+		<item>Title</item>
+        <item>Phrase</item>
+        <item>Author</item>
+        <item>Subject</item>
+        <item>Series</item>
+        <item>Periodical</item>
+    </string-array>
+    
+    <!--  Colors -->
+    <color name="scheduleHeader">#000000</color>
+    <color name="separator">#000000</color>
+    <color name="startColor">#303989</color>
+    <color name="endColor">#3D49B2</color>
+    <color name="strokeColor">#000000</color>
+    <color name="odd">#7F95FA</color>
+    <color name="even">#6F8AFF</color>
+    <color name="tableFontColor">#000000</color>
+
+</resources>

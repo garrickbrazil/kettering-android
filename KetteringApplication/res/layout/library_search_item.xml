@@ -1,0 +1,230 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:shrinkColumns="*"
+    android:stretchColumns="*" >
+		    
+ 	<TableRow
+ 	    android:id="@+id/titleRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp" 
+        android:background="@layout/table_odd_top">
+  	             
+		<TextView
+	        android:id="@+id/title"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_span="12"
+	        android:layout_marginTop="2dp"
+	        android:layout_marginLeft="10dp"
+   			android:layout_marginRight="10dp" 
+	        android:layout_marginBottom="2dp"
+	        android:gravity="center"
+	        android:textColor="@color/tableFontColor"
+	        android:textStyle="bold"
+	        android:textSize="16dp" >
+     	</TextView>
+    </TableRow>
+ 	
+ 	<TableRow
+ 	   	android:id="@+id/authorRow"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp" 
+	    android:background="@color/even" >
+		<TextView
+		    android:text="Author"
+		    android:layout_marginLeft="10dp"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+ 	
+ 	<TableRow
+ 	   	android:id="@+id/callNumberRow"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp" 
+	    android:background="@color/even" >
+		<TextView
+		    android:text="Call Numer"
+            android:textStyle="bold"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="14dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/callNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+    
+   	<TableRow
+        android:id="@+id/publisherRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp" 
+        android:background="@color/even" >
+		<TextView
+            android:text="Publisher"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/publisher"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+    
+    <TableRow
+        android:id="@+id/editionRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp" 
+        android:background="@color/even" >
+		<TextView
+            android:text="Edition"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/edition"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+    
+    <TableRow
+        android:id="@+id/pubDateRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp"
+        android:background="@color/even" >
+		<TextView
+            android:text="Published Date"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/pubDate"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+    
+    <TableRow
+        android:id="@+id/holdingsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp"
+   		android:layout_marginBottom="18dp" 
+        android:background="@layout/table_even_bottom" >
+		<TextView
+            android:text="Availability"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/holdings"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+ </TableLayout>

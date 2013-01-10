@@ -1,0 +1,163 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:shrinkColumns="*"
+    android:stretchColumns="*" >
+		    
+ 	<TableRow
+ 	    android:id="@+id/titleRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp" 
+        android:background="@layout/table_odd_top">
+  	             
+		<TextView
+	        android:id="@+id/title"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_span="12"
+	        android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+	        android:gravity="center"
+	        android:textColor="@color/tableFontColor"
+	        android:textStyle="bold"
+	        android:textSize="16dp" >
+     	</TextView>
+    </TableRow>
+ 	
+ 	<TableRow
+ 	   	android:id="@+id/kuCourseRow"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp" 
+	    android:background="@color/even" >
+		<TextView
+		    android:text="Kettering Course"
+		    android:layout_marginLeft="10dp"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/kuCourse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+ 	
+ 	<TableRow
+ 	   	android:id="@+id/trCourseRow"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp" 
+	    android:background="@color/even" >
+		<TextView
+		    android:text="Transfer Course"
+            android:textStyle="bold"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textSize="14dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/trCourse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+    
+   	<TableRow
+        android:id="@+id/creditsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp"
+        android:background="@color/even" >
+		<TextView
+            android:text="Credits"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/credits"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+    
+   	<TableRow
+        android:id="@+id/commentsRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+   		android:layout_marginRight="10dp"
+   		android:layout_marginBottom="18dp"
+        android:background="@layout/table_even_bottom" >
+		<TextView
+            android:text="Comments"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="left" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/comments"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="left"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>
+
+ </TableLayout>

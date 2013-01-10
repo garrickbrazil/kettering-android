@@ -1,0 +1,220 @@
+package com.ku.ketteringapplication;
+
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.google.gson.Gson;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.Html;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+
+public class Schedule extends Activity{
+	
+	// Properties
+	private List<Course> courses;
+	private List<TimeBlock> monday;
+	private List<TimeBlock> tuesday;
+	private List<TimeBlock> wednesday;
+	private List<TimeBlock> thursday;
+	private List<TimeBlock> friday;
+	private LayoutInflater inflater;
+	
+	// Constants
+	private final int ROWSIZE = 5;
+	private final String[] COLORS = {"#FFDEAD", "#87CEEB","#8FBC8F", "#F0E68C", "#FFC0CB", "#D8BFD8", "#BFEFFF", "#C1FFC1", "#BCEE68", "#FFEC8B"};
+	
+	public void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	
+	    setContentView(R.layout.schedule);
+	    
+	    this.courses = new ArrayList<Course>();
+
+	    Bundle extras = getIntent().getExtras();
+	    String[] jsonCourses = extras.getStringArray("jsonCourses");
+		
+	    Gson gson = new Gson();
+	    
+	    for(String jsonCourse : jsonCourses){
+	    	Course current = gson.fromJson(jsonCourse, Course.class);
+	    	if(current != null) courses.add(current);
+	    }
+	    
+	    sortCoursesToDay();
+	    
+	    this.inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+	    LinearLayout mondayView = (LinearLayout) findViewById(R.id.mondayContainer);
+	    LinearLayout tuesdayView = (LinearLayout) findViewById(R.id.tuesdayContainer);
+	    LinearLayout wednesdayView = (LinearLayout) findViewById(R.id.wednesdayContainer);
+	    LinearLayout thursdayView = (LinearLayout) findViewById(R.id.thursdayContainer);
+	    LinearLayout fridayView = (LinearLayout) findViewById(R.id.fridayContainer);
+	    
+	    TextView time8am = (TextView) findViewById(R.id.time8am);
+	    TextView time9am = (TextView) findViewById(R.id.time9am);
+	    TextView time10am = (TextView) findViewById(R.id.time10am);
+	    TextView time11am = (TextView) findViewById(R.id.time11am);
+	    TextView time12pm = (TextView) findViewById(R.id.time12pm);
+	    TextView time1pm = (TextView) findViewById(R.id.time1pm);
+	    TextView time2pm = (TextView) findViewById(R.id.time2pm);
+	    TextView time3pm = (TextView) findViewById(R.id.time3pm);
+	    TextView time4pm = (TextView) findViewById(R.id.time4pm);
+	    TextView time5pm = (TextView) findViewById(R.id.time5pm);
+	    TextView time6pm = (TextView) findViewById(R.id.time6pm);
+	    TextView time7pm = (TextView) findViewById(R.id.time7pm);
+	    TextView time8pm = (TextView) findViewById(R.id.time8pm);
+	    TextView time9pm = (TextView) findViewById(R.id.time9pm);
+	    
+	    int latestTime = 8;
+	    
+	    for(Course course : this.courses){
+	    	
+	    	TimeBlock newBlock = TimeBlock.convertToTimeBlock(course);
+	    	
+	    	if(newBlock != null){
+	    		
+		    	@SuppressWarnings("deprecation")
+		    	int hours = newBlock.getEnd().getHours();
+		    	if (hours > latestTime) latestTime = hours;
+	    	}
+	    }
+	    
+	    
+	    
+	    
+	    if(latestTime > 8) time8am.setHeight(12 * this.ROWSIZE);
+	    else time8am.setVisibility(View.GONE);
+	    if(latestTime > 9) time9am.setHeight(12 * this.ROWSIZE);
+	    else time9am.setVisibility(View.GONE);
+	    if(latestTime > 10) time10am.setHeight(12 * this.ROWSIZE);
+	    else time10am.setVisibility(View.GONE);
+	    if(latestTime > 11) time11am.setHeight(12 * this.ROWSIZE);
+	    else time11am.setVisibility(View.GONE);
+	    if(latestTime > 12) time12pm.setHeight(12 * this.ROWSIZE);
+	    else time12pm.setVisibility(View.GONE);
+	    if(latestTime > 13) time1pm.setHeight(12 * this.ROWSIZE);
+	    else time1pm.setVisibility(View.GONE);
+	    if(latestTime > 14) time2pm.setHeight(12 * this.ROWSIZE);
+	    else time2pm.setVisibility(View.GONE);
+	    if(latestTime > 15) time3pm.setHeight(12 * this.ROWSIZE);
+	    else time3pm.setVisibility(View.GONE);
+	    if(latestTime > 16) time4pm.setHeight(12 * this.ROWSIZE);
+	    else time4pm.setVisibility(View.GONE);
+	    if(latestTime > 17) time5pm.setHeight(12 * this.ROWSIZE);
+	    else time5pm.setVisibility(View.GONE);
+	    if(latestTime > 18) time6pm.setHeight(12 * this.ROWSIZE);
+	    else time6pm.setVisibility(View.GONE);
+	    if(latestTime > 19) time7pm.setHeight(12 * this.ROWSIZE);
+	    else time7pm.setVisibility(View.GONE);
+	    if(latestTime > 20) time8pm.setHeight(12 * this.ROWSIZE);
+	    else time8pm.setVisibility(View.GONE);
+	    if(latestTime > 21) time9pm.setHeight(12 * this.ROWSIZE);
+	    else time9pm.setVisibility(View.GONE);
+	    
+	    
+	    TimeBlock latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    
+	    // Monday
+	    for(TimeBlock course : this.monday) latestBlock = addTimeBlock(mondayView, course, latestBlock);
+	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    
+	    // Tuesday
+	    for(TimeBlock course : this.tuesday) latestBlock = addTimeBlock(tuesdayView, course, latestBlock);
+	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    
+	    // Wednesday
+	    for(TimeBlock course : this.wednesday) latestBlock = addTimeBlock(wednesdayView, course, latestBlock);
+	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    
+	    // Thursday
+	    for(TimeBlock course : this.thursday) latestBlock = addTimeBlock(thursdayView, course, latestBlock);
+	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    
+	    // Friday
+	    for(TimeBlock course : this.friday) latestBlock = addTimeBlock(fridayView, course, latestBlock); 
+	    
+	}
+	
+	public TimeBlock addTimeBlock(LinearLayout day, TimeBlock course, TimeBlock latestBlock){
+		
+		int spacerHeight = latestBlock.compareToRowEnd(course) * this.ROWSIZE;
+    	int height = course.getRowSpan() * this.ROWSIZE;
+    	
+    	TextView spacer = (TextView) this.inflater.inflate(R.layout.course, null);
+    	spacer.setHeight(spacerHeight);
+    		
+    	TextView current = (TextView) this.inflater.inflate(R.layout.course, null);
+    	current.setText(Html.fromHtml(course.getCourse().getCourseID() + "</b><br>" + course.getCourse().getLocation().replaceAll("Academic\\sBuilding", "AB") + "<br>" + course.getCourse().getTime()));
+    	current.setHint(Html.fromHtml(course.getCourse().getCourseName() + "</b><br>" + course.getCourse().getInstructor()));
+    	current.setBackgroundColor(Color.parseColor(course.getCourse().getColor()));
+    	current.setHeight(height);
+    	
+    	current.setOnClickListener(new OnClickListener() { 
+    		public void onClick(View v) { 
+				TextView current = (TextView) v;
+				
+				CharSequence hint = current.getHint();
+				CharSequence text = current.getText();
+				
+				current.setText(hint);
+				current.setHint(text);
+			} 
+    	});
+    	
+    	day.addView(spacer);
+    	day.addView(current);
+    	return course;
+		
+	}
+	
+	private void sortCoursesToDay(){
+		
+		// Days of the week
+		this.monday = new ArrayList<TimeBlock>();
+		this.tuesday = new ArrayList<TimeBlock>();
+		this.wednesday = new ArrayList<TimeBlock>();
+		this.thursday = new ArrayList<TimeBlock>();
+		this.friday = new ArrayList<TimeBlock>();
+		
+		for(int i = 0; i < this.courses.size(); i++){
+		
+			
+			Course current = this.courses.get(i);
+			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current);
+			
+			if (newBlock != null){
+
+				// Color
+				if(i < COLORS.length) current.setColor(COLORS[i]);
+				else current.setColor(COLORS[0]);
+			
+				if(current.getDays().contains("M")) monday.add(newBlock);
+				if(current.getDays().contains("T")) tuesday.add(newBlock);
+				if(current.getDays().contains("W")) wednesday.add(newBlock);
+				if(current.getDays().contains("R")) thursday.add(newBlock);
+				if(current.getDays().contains("F")) friday.add(newBlock);
+			}
+		}	
+		
+		Collections.sort(this.monday);
+		Collections.sort(this.tuesday);
+		Collections.sort(this.wednesday);
+		Collections.sort(this.thursday);
+		Collections.sort(this.friday);
+	}
+	
+	public void back(View view){
+    	super.finish();
+    }
+	
+}

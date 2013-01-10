@@ -1,0 +1,28 @@
+<TableRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:layout_marginLeft="15dp"
+	android:layout_marginRight="15dp"
+	android:layout_marginBottom="15dp" 
+    android:background="@color/even" >
+		<TextView
+		    android:id="@+id/variableName"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:textColor="@color/tableFontColor"
+            android:gravity="center" >
+        </TextView>
+   		         
+		<TextView
+			android:id="@+id/variableValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/tableFontColor"
+            android:layout_span="10"
+            android:gravity="center"
+            android:textSize="14dp" >
+        </TextView>
+    </TableRow>

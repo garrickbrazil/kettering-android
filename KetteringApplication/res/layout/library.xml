@@ -1,0 +1,143 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100"
+    android:orientation="vertical"
+    android:background="@drawable/blue_grid_edit" >
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="12"
+	    android:gravity="center_vertical"
+	    android:orientation="horizontal" >
+     
+     <ImageView
+        android:id="@+id/backImage"
+        android:layout_marginBottom = "2dp"
+        android:layout_width="40dp" 
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:clickable="true"
+        android:onClick="back"
+        android:src="@drawable/arrowleft" >
+    </ImageView>
+    
+    <TextView
+		android:id="@+id/date"
+		android:layout_width="fill_parent"
+		android:layout_height="match_parent"
+		android:gravity="center"
+		android:text="Library"
+		android:textSize="22dp"
+		android:textStyle="bold|italic">
+     </TextView>
+    </LinearLayout>
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="88"
+    android:weightSum="100"
+    android:orientation="vertical" >
+    
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="18"
+	    android:gravity="center_vertical"
+	    android:weightSum="100"
+	    android:orientation="horizontal"
+    	android:layout_marginTop="5dp" >
+	
+	    <EditText 
+	    	android:id="@+id/searchField" 
+	    	android:layout_weight="56"
+	    	android:layout_width="0dp" 
+	    	android:gravity="center_vertical"
+	    	android:layout_height="wrap_content"
+	    	android:textSize="14dp" 
+	    	android:inputType="textEmailAddress" 
+	    	android:hint="Search..."
+	    	android:textColorHint="#2B2B2B"
+	    	android:layout_marginLeft="10dp"
+		   	android:layout_marginRight="10dp" >
+		</EditText>
+		
+		<Spinner
+        android:id="@+id/type"
+        android:layout_width="0dp"
+        android:textSize="13dp"
+        android:layout_weight="38"
+        android:layout_height="wrap_content"
+        android:entries="@array/library_search_options"
+        android:prompt="@string/search_type_prompt" />
+	    
+    	<ImageView
+	       android:id="@+id/searchButton"
+	       android:layout_width="30dp"
+	       android:layout_weight="6" 
+	       android:layout_height="30dp"
+	       android:layout_marginRight="10dp"
+	       android:clickable="true"
+	       android:onClick="librarySearch"
+	       android:src="@drawable/search_button" >
+	   </ImageView>
+ 	</LinearLayout>
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_marginBottom="15dp"
+	    android:gravity="center_horizontal"
+	    android:layout_weight="84"
+	    android:orientation="vertical" >
+	    
+        
+     
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	  	android:layout_width="fill_parent"
+	   	android:layout_gravity="center_vertical"
+	   	android:layout_height="wrap_content"
+	   	android:gravity="center_vertical" >
+	   	
+        <LinearLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_marginTop="5dp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+        
+	        <LinearLayout
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				android:id="@+id/libraryContainer"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical" >
+   	
+            
+            
+   			</LinearLayout>
+				<Button
+			     	android:id="@+id/loadMoreButton"
+			     	android:layout_width="match_parent"
+			     	android:layout_height="34dp"
+			     	android:background="@layout/custom_button"
+			     	android:text="Load more"
+			     	android:textColor="#FFFFFF"
+			     	android:onClick="loadMoreLibrary"
+			     	android:textSize="18dp"
+			     	android:visibility="gone"
+			    	android:layout_marginTop="10dp"
+			    	android:layout_marginBottom="20dp" >
+			 	</Button>
+       	</LinearLayout>
+    </ScrollView>
+    </LinearLayout>
+ 	</LinearLayout>
+</LinearLayout>
