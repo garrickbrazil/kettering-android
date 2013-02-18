@@ -17,27 +17,35 @@ public class CurrentGrade {
 	// Properties
 	private String courseName;
 	private List<CurrentGradeItem> gradeItems;
-	private boolean validCourseGrade;
 	private double adjPointsPossible;
 	private double adjTotal;
-	
+	private boolean isLoaded;
+	private String link;
+	private String titleTotal;
 	
 	/********************************************************************
 	 * Constructor: CurrentGrade()
 	 * Purpose: create a grade object
-	 * Parameters:
-	 *		String courseName: name of the course
-	 *		String details: HTML details of course grade items
 	/*******************************************************************/
-	public CurrentGrade(String courseName, String details){
+	public CurrentGrade(String courseName, String link, String titleTotal){
 		
 		// Initialize properties
 		this.courseName = courseName;
 		this.gradeItems = new ArrayList<CurrentGradeItem>();
-		this.validCourseGrade = false;
 		this.adjPointsPossible = 0;
 		this.adjTotal = 0;
+		this.isLoaded = false;
+		this.link = link;
+		this.titleTotal = titleTotal;
 		
+	}
+
+	/********************************************************************
+	 * Method: storeGradeItems
+	 * Purpose: store grade items for course
+	/*******************************************************************/
+	public boolean storeGradeItems(String details){
+
 		// Document
 		Document doc = Jsoup.parse(details);
 		
@@ -59,14 +67,21 @@ public class CurrentGrade {
 				// Adjusted total & points possible
 				if (current.getValidGrade() && !(current.getGradeName().equalsIgnoreCase("Total")|| current.getGradeName().equalsIgnoreCase("Weighted Total"))) { 
 					
-					this.validCourseGrade = true;
-					
 					// Add
 					this.gradeItems.add(current);
 					this.adjTotal += current.getScore();
 					this.adjPointsPossible += current.getPointsPossible();
 				}
 			}
+			this.isLoaded = true;
+			return true;
+		}
+		
+		
+		else{
+			
+			this.isLoaded = false;
+			return false;
 		}
 	}
 	
@@ -103,8 +118,12 @@ public class CurrentGrade {
 	 * Purpose: get the corresponding data
 	/*******************************************************************/
 	public String getCourseName() { return this.courseName; }
-	public boolean getValidCourseGrade() { return this.validCourseGrade; }
+	public boolean getIsLoaded() { return this.isLoaded; }
 	public double getAdjTotal() { return this.adjTotal; }
 	public List<CurrentGradeItem> getGradeItems() { return this.gradeItems; }
 	public double getAdjPointsPossible() { return this.adjPointsPossible; }
+	public String getPercent() { return (this.adjTotal*100) / (this.adjPointsPossible*100) + ""; }
+	public String getLink() { return this.link; }
+	public String getTitleTotal(){ return this.titleTotal; }
+	
 }

@@ -18,7 +18,10 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
+/********************************************************************
+ * Class: Schedule
+ * Purpose: creates and displays a kettering schedule
+/*******************************************************************/
 public class Schedule extends Activity{
 	
 	// Properties
@@ -32,34 +35,61 @@ public class Schedule extends Activity{
 	
 	// Constants
 	private final int ROWSIZE = 5;
-	private final String[] COLORS = {"#FFDEAD", "#87CEEB","#8FBC8F", "#F0E68C", "#FFC0CB", "#D8BFD8", "#BFEFFF", "#C1FFC1", "#BCEE68", "#FFEC8B"};
+	private final String[] COLORS = {"#FFDEAD", "#87CEEB","#8FBC8F", 
+			"#F0E68C", "#FFC0CB", "#D8BFD8", "#BFEFFF", "#C1FFC1", "#BCEE68", "#FFEC8B"};
 	
+	
+	/********************************************************************
+	 * Method: onCreate
+	 * Purpose: method for when application loads
+	/*******************************************************************/
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	
 	    setContentView(R.layout.schedule);
+	    this.inflater = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    Gson gson = new Gson();
+	    int latestTime = 8;
 	    
+	    
+	    // Clear courses
 	    this.courses = new ArrayList<Course>();
 
+	    // Grab course info
 	    Bundle extras = getIntent().getExtras();
 	    String[] jsonCourses = extras.getStringArray("jsonCourses");
 		
-	    Gson gson = new Gson();
 	    
 	    for(String jsonCourse : jsonCourses){
+	    	
+	    	// Recreate course list
 	    	Course current = gson.fromJson(jsonCourse, Course.class);
-	    	if(current != null) courses.add(current);
+	    	if(current != null){
+	    		
+	    		// Add
+	    		courses.add(current);
+	    		
+	    		TimeBlock newBlock = TimeBlock.convertToTimeBlock(current);
+		    	
+		    	if(newBlock != null){
+		    	
+		    		// Check for latest time
+			    	int hours = newBlock.getEnd().getHours();
+			    	if (hours > latestTime) latestTime = hours;
+		    	}
+	    	}
 	    }
 	    
 	    sortCoursesToDay();
 	    
-	    this.inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+	    // Day Containers
 	    LinearLayout mondayView = (LinearLayout) findViewById(R.id.mondayContainer);
 	    LinearLayout tuesdayView = (LinearLayout) findViewById(R.id.tuesdayContainer);
 	    LinearLayout wednesdayView = (LinearLayout) findViewById(R.id.wednesdayContainer);
 	    LinearLayout thursdayView = (LinearLayout) findViewById(R.id.thursdayContainer);
 	    LinearLayout fridayView = (LinearLayout) findViewById(R.id.fridayContainer);
 	    
+	    // Time fields
 	    TextView time8am = (TextView) findViewById(R.id.time8am);
 	    TextView time9am = (TextView) findViewById(R.id.time9am);
 	    TextView time10am = (TextView) findViewById(R.id.time10am);
@@ -75,23 +105,8 @@ public class Schedule extends Activity{
 	    TextView time8pm = (TextView) findViewById(R.id.time8pm);
 	    TextView time9pm = (TextView) findViewById(R.id.time9pm);
 	    
-	    int latestTime = 8;
 	    
-	    for(Course course : this.courses){
-	    	
-	    	TimeBlock newBlock = TimeBlock.convertToTimeBlock(course);
-	    	
-	    	if(newBlock != null){
-	    		
-		    	@SuppressWarnings("deprecation")
-		    	int hours = newBlock.getEnd().getHours();
-		    	if (hours > latestTime) latestTime = hours;
-	    	}
-	    }
-	    
-	    
-	    
-	    
+	    // Remove times greater than the latestTime
 	    if(latestTime > 8) time8am.setHeight(12 * this.ROWSIZE);
 	    else time8am.setVisibility(View.GONE);
 	    if(latestTime > 9) time9am.setHeight(12 * this.ROWSIZE);
@@ -145,38 +160,58 @@ public class Schedule extends Activity{
 	    
 	}
 	
+	
+	/********************************************************************
+	 * Method: addTimeBlock
+	 * Purpose: adds a time block to the layout, then returns added block
+	/*******************************************************************/
 	public TimeBlock addTimeBlock(LinearLayout day, TimeBlock course, TimeBlock latestBlock){
 		
+		// Calculate heights
 		int spacerHeight = latestBlock.compareToRowEnd(course) * this.ROWSIZE;
     	int height = course.getRowSpan() * this.ROWSIZE;
     	
+    	
+    	// Inflate spacer and class
     	TextView spacer = (TextView) this.inflater.inflate(R.layout.course, null);
-    	spacer.setHeight(spacerHeight);
-    		
     	TextView current = (TextView) this.inflater.inflate(R.layout.course, null);
+    	
+    	
+    	// Set course info. Secretly hide additional info in hint.
     	current.setText(Html.fromHtml(course.getCourse().getCourseID() + "</b><br>" + course.getCourse().getLocation().replaceAll("Academic\\sBuilding", "AB") + "<br>" + course.getCourse().getTime()));
     	current.setHint(Html.fromHtml(course.getCourse().getCourseName() + "</b><br>" + course.getCourse().getInstructor()));
     	current.setBackgroundColor(Color.parseColor(course.getCourse().getColor()));
-    	current.setHeight(height);
     	
+    	// Set height
+    	current.setHeight(height);
+    	spacer.setHeight(spacerHeight);	
+    	
+    	// Listener for clicking of a course
     	current.setOnClickListener(new OnClickListener() { 
     		public void onClick(View v) { 
-				TextView current = (TextView) v;
 				
+    			TextView current = (TextView) v;
+				
+    			// Switch hint and text
 				CharSequence hint = current.getHint();
 				CharSequence text = current.getText();
-				
 				current.setText(hint);
 				current.setHint(text);
 			} 
     	});
     	
+    	// Add components
     	day.addView(spacer);
     	day.addView(current);
+    	
     	return course;
-		
 	}
 	
+	
+	/********************************************************************
+	 * Method: sortCoursesToDay
+	 * Purpose: stores courses in order of time insider respective days
+	/*******************************************************************/
 	private void sortCoursesToDay(){
 		
 		// Days of the week
@@ -187,8 +222,8 @@ public class Schedule extends Activity{
 		this.friday = new ArrayList<TimeBlock>();
 		
 		for(int i = 0; i < this.courses.size(); i++){
-		
 			
+			// Get course and timeblock
 			Course current = this.courses.get(i);
 			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current);
 			
@@ -198,6 +233,7 @@ public class Schedule extends Activity{
 				if(i < COLORS.length) current.setColor(COLORS[i]);
 				else current.setColor(COLORS[0]);
 			
+				// Add to correct block(s)
 				if(current.getDays().contains("M")) monday.add(newBlock);
 				if(current.getDays().contains("T")) tuesday.add(newBlock);
 				if(current.getDays().contains("W")) wednesday.add(newBlock);
@@ -206,6 +242,7 @@ public class Schedule extends Activity{
 			}
 		}	
 		
+		// Sort each day
 		Collections.sort(this.monday);
 		Collections.sort(this.tuesday);
 		Collections.sort(this.wednesday);
@@ -213,6 +250,10 @@ public class Schedule extends Activity{
 		Collections.sort(this.friday);
 	}
 	
+	/********************************************************************
+	 * Method: back
+	 * Purpose: exit activity when back is pressed
+	/*******************************************************************/
 	public void back(View view){
     	super.finish();
     }

@@ -40,6 +40,10 @@ public class Student {
 	private AccountTotal accountTotal;
 	private String scheduleHTML;
 	private boolean scheduleLoaded;
+	private boolean currentGradesLoaded;
+	private boolean finalGradesLoaded;
+	private boolean midtermGradesLoaded;
+	private int gradesPage;
 	
 	
 	/********************************************************************
@@ -60,34 +64,16 @@ public class Student {
 		this.finalGrades = new ArrayList<FinalGrade>();
 		this.midtermGrades = new ArrayList<MidtermGrade>();
 		this.scheduleHTML = "";
-	}
-	
-	
-	/********************************************************************
-	 * Constructor: Student(String username, String password)
-	 * Purpose: create student object with username and password
-	/*******************************************************************/
-	public Student(String username, String password){
-		
-		// Initialize
-		this.username = username;
-		this.password = password;
-		this.scheduleHTML = "";
-		this.loggedIn = false;
+		this.gradesPage = 0;
+		this.currentGradesLoaded = false;
+		this.finalGradesLoaded = false;
+		this.midtermGradesLoaded = false;
 		this.scheduleLoaded = false;
-		this.clientBanner = new DefaultHttpClient();
-		this.clientBlackboard = new DefaultHttpClient();
-		this.courses = new ArrayList<Course>();
-		this.currentGrades = new ArrayList<CurrentGrade>();
-		this.finalGrades = new ArrayList<FinalGrade>();
-		this.midtermGrades = new ArrayList<MidtermGrade>();
 	}
 	
-	
+		
 	/********************************************************************
-	 * Accessors: getUsername, getPassword, getCourses, getCurrentGrades
-	 * 		getTranscript, getFinalGrades, getMidtermGrades, getUndergradSummary
-	 *		getAccountTotal, GetDynamicCourses
+	 * Accessors
 	 * Purpose: get the corresponding data
 	/*******************************************************************/
 	public String getUsername() { return this.username; }
@@ -102,6 +88,10 @@ public class Student {
 	public boolean getLoggedIn(){ return this.loggedIn; }
 	public String getScheduleHTML(){ return this.scheduleHTML; }
 	public boolean getScheduleLoaded(){ return this.scheduleLoaded; }
+	public int getGradesPage(){ return this.gradesPage; }
+	public boolean getCurrentGradesLoaded(){ return this.currentGradesLoaded; }
+	public boolean getFinalGradesLoaded(){ return this.finalGradesLoaded; }
+	public boolean getMidtermGradesLoaded(){ return this.midtermGradesLoaded; }
 	
 	
 	/********************************************************************
@@ -110,6 +100,7 @@ public class Student {
 	/*******************************************************************/
 	public void setUsername(String username) { this.username = username; }
 	public void setPassword(String password) { this.password = password; }
+	public void setGradesPage(int gradesPage) { this.gradesPage = gradesPage; }
 	
 	
 	/********************************************************************
@@ -281,7 +272,7 @@ public class Student {
 	 * Method: storeCurrentGrades()
 	 * Purpose: stores grades to memory
 	/*******************************************************************/
-	public void storeCurrentGrades(){
+	public boolean storeCurrentGrades(){
 		
 		try{
 			
@@ -290,14 +281,6 @@ public class Student {
 			// Execute
 		    HttpResponse response = this.clientBlackboard.execute(grade);
 			String html = HTMLParser.parse(response);
-		    
-			// Write to file
-			PrintWriter printer = new PrintWriter("artifacts/grades.html");
-			printer.print(html);	    	
-			printer.close();
-			
-			System.out.println("Successfully stored \"grades.html\".");
-			
 			
 			// Class grades
 			Elements classGrades = Jsoup.parse(html).getElementsByTag("td");
@@ -307,32 +290,52 @@ public class Student {
 			for (int i = 0; i < classGrades.size()/2; i++) {
 				
 				if(classGrades.get(i*2 +1).childNodes().size() > 0 && classGrades.get(i*2 +1).childNode(0).childNodes().size() > 0){
-					// Details
-					HttpGet gradeDetail = new HttpGet("https://blackboard.kettering.edu" + classGrades.get(i*2+1).childNode(0).childNode(0).attr("href"));
-					HttpResponse gradeResponse = this.clientBlackboard.execute(gradeDetail);
 					
 					// Parameters
+					String gradeLink = "https://blackboard.kettering.edu" + classGrades.get(i*2+1).childNode(0).childNode(0).attr("href");
 					String className = classGrades.get(i*2).text();
-					String gradeHTML = HTMLParser.parse(gradeResponse);
+					String titleTotal = classGrades.get(i*2+1).child(0).child(0).text();
 					
-					// Write to file
-					printer = new PrintWriter("artifacts/Grade Details/gradeDetail" + i + ".html");
-					printer.print(gradeHTML);	    	
-					printer.close();
-					
-					System.out.println("Successfully stored \"gradeDetail" + i + ".html\"");
+					// Fix name format
+					if(className.split(":\\s").length > 0){
+						String[] split = className.split(":\\s");
+						className = "";
+						for(int j = 1; j < split.length; j++) className += split[j] + " ";
+					}
+					className = className.split("\\s-\\sWINTER")[0];
 					
 					// Create
-					CurrentGrade current = new CurrentGrade(className, gradeHTML);
-					if (current.getValidCourseGrade()) this.currentGrades.add(current);
+					CurrentGrade current = new CurrentGrade(className, gradeLink, titleTotal);
+					this.currentGrades.add(current);
 				}
 			}
 			
+			this.currentGradesLoaded = true;
+			return true;
 		}
 		
-		catch(Exception e){ e.printStackTrace(); }
+		catch(Exception e){ e.printStackTrace(); this.currentGradesLoaded = true; return false;}
 	}
 
+	
+	/********************************************************************
+	 * Method: storeGradeItems
+	 * Purpose: store grade items for a course
+	/*******************************************************************/
+	public boolean storeGradeItem(int index){
+
+		try{
+
+			// Details
+			HttpGet gradeDetail = new HttpGet("https://blackboard.kettering.edu" + this.currentGrades.get(index).getLink());
+			HttpResponse gradeResponse = this.clientBlackboard.execute(gradeDetail);
+			
+			return this.currentGrades.get(index).storeGradeItems(HTMLParser.parse(gradeResponse));
+		}
+		
+		catch(Exception e){ return false; }
+		
+	}
 	
 	
 	/********************************************************************

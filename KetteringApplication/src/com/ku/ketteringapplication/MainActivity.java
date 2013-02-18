@@ -122,8 +122,8 @@ public class MainActivity extends Activity {
         
         ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.iconsGlob, this.height, this.width));
         
-        /*
-        EditText login = (EditText) findViewById(R.id.signinField);
+        
+        /*EditText login = (EditText) findViewById(R.id.signinField);
         EditText pass = (EditText) findViewById(R.id.passwordField);
         
         login.setText("");
@@ -251,7 +251,13 @@ public class MainActivity extends Activity {
     
     
     // Grades click
-    private OnClickListener gradesListener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };    
+    private OnClickListener gradesListener = new OnClickListener() { 
+    	public void onClick(View v) { 
+    		
+    		lastView.add(0, HOME);
+    		new GradesTask().execute(student);
+    	} 
+    };    
     
     
     
@@ -351,6 +357,76 @@ public class MainActivity extends Activity {
      * Purpose: searches a transfer
     /*******************************************************************/
     public void searchTransfer(View view){ new TransferSearchTask().execute(this.transDir); }
+    
+    
+    /********************************************************************
+     * Method: changeGradeType
+     * Purpose: changes type of grades being shown
+    /*******************************************************************/
+    public void changeGradeType(View view){ 
+    	
+    	Button gradeButton = (Button) view;
+    	
+    	if(gradeButton.getText() == "Current") this.student.setGradesPage(0);
+    	else if(gradeButton.getText() == "Final") this.student.setGradesPage(1);
+    	else if(gradeButton.getText() == "Midterm") this.student.setGradesPage(1);
+    	
+    	populateGrades();
+    }
+    
+    /********************************************************************
+     * Method: populateGrades
+     * Purpose: populates grades (current, final or midterm)
+    /*******************************************************************/
+    public void populateGrades(){
+    	
+    	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+    	LinearLayout gradesContainer = (LinearLayout) findViewById(R.id.gradesContainer);
+    	Button currentButton = (Button) findViewById(R.id.currentButton);
+    	Button finalButton = (Button) findViewById(R.id.finalButton);
+    	Button midtermButton = (Button) findViewById(R.id.midtermButton);
+    	
+    	currentButton.setBackgroundResource(R.layout.food_menu_button);
+    	finalButton.setBackgroundResource(R.layout.food_menu_button);
+    	midtermButton.setBackgroundResource(R.layout.food_menu_button);
+    	
+    	gradesContainer.removeAllViews();
+    	
+    	// Current grades
+    	if(this.student.getGradesPage() == 0){
+    	
+    		currentButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    		
+    		List<CurrentGrade> currentGrades = this.student.getCurrentGrades();
+    		for(int i = 0; i < currentGrades.size(); i++){
+    			
+    			CurrentGrade current = currentGrades.get(i);
+    			
+    			TableLayout currentView = (TableLayout) inflater.inflate(R.layout.grade, null);
+    			//View separator = inflater.inflate(R.layout.separator_horizontal, null);
+    			TextView title = (TextView) currentView.findViewById(R.id.title);
+    			TextView total = (TextView) currentView.findViewById(R.id.total);
+    			
+    			title.setText(current.getCourseName());
+    			total.setText(current.getTitleTotal() + "");
+    			
+    			gradesContainer.addView(currentView);
+    			//if(i != currentGrades.size() - 1) gradesContainer.addView(separator);
+    		}
+    		
+    	}
+    	
+    	// Final grades
+    	else if(this.student.getGradesPage() == 1){
+    		midtermButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    	}
+    	
+    	// Midterm grades
+    	else{
+    		midtermButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    	}
+    	
+    }
     
     /********************************************************************
      * Method: populateSchedule
@@ -1487,8 +1563,8 @@ public class MainActivity extends Activity {
     	@Override
         protected Boolean doInBackground(Student... student) {  
     		
-    		@SuppressWarnings("deprecation")int year = Calendar.getInstance().getTime().getYear() + 1900;
-    		@SuppressWarnings("deprecation") int month = Calendar.getInstance().getTime().getMonth();
+    		int year = Calendar.getInstance().getTime().getYear() + 1900;
+    		int month = Calendar.getInstance().getTime().getMonth();
     		String term = year + "";
     		
     		if (month >= 0 && month <= 2) term += "01";
@@ -1520,6 +1596,52 @@ public class MainActivity extends Activity {
         
     }
     
+    /********************************************************************
+     * Task: GradesTask
+     * Purpose: task to store grades
+    /*******************************************************************/
+    private class GradesTask extends AsyncTask<Student, Void, Boolean> {
+    	
+    	@Override
+        protected Boolean doInBackground(Student... student) {  
+    		
+    		if(student[0].getGradesPage() == 0){
+    			
+    			if(student[0].getCurrentGradesLoaded()) return true;
+    			else return student[0].storeCurrentGrades();
+    		}
+    		
+    		else if(student[0].getGradesPage() == 1){
+    			/* TODO */
+    			return false;
+    		}
+    		
+    		else {
+    			/* TODO */
+    			return false;
+    		}
+        }      
+
+        protected void onPostExecute(Boolean success) {
+        	
+    		if(success){       
+
+    			// Show
+    			setContentView(R.layout.grades);
+	            populateGrades();
+    		}
+    		
+            if(loadDialog.isShowing()) loadDialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { loadDialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+    
     
     /********************************************************************
      * Task: KUMenuTask
@@ -1535,7 +1657,7 @@ public class MainActivity extends Activity {
     		else return menu[0].storeMenu();
         }      
 
-    	@Override @SuppressWarnings("deprecation")
+    	@Override
         protected void onPostExecute(Boolean success) {
         	
     		if(success){
