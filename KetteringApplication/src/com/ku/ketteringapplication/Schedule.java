@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 /********************************************************************
  * Class: Schedule
- * Purpose: creates and displays a kettering schedule
+ * Purpose: creates and displays a Kettering schedule
 /*******************************************************************/
 public class Schedule extends Activity{
 	
@@ -43,6 +43,7 @@ public class Schedule extends Activity{
 	 * Method: onCreate
 	 * Purpose: method for when application loads
 	/*******************************************************************/
+	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	
@@ -59,7 +60,6 @@ public class Schedule extends Activity{
 	    Bundle extras = getIntent().getExtras();
 	    String[] jsonCourses = extras.getStringArray("jsonCourses");
 		
-	    
 	    for(String jsonCourse : jsonCourses){
 	    	
 	    	// Recreate course list
@@ -257,5 +257,4 @@ public class Schedule extends Activity{
 	public void back(View view){
     	super.finish();
     }
-	
 }

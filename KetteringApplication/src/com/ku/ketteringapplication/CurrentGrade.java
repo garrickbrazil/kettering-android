@@ -65,12 +65,12 @@ public class CurrentGrade {
 				CurrentGradeItem current = new CurrentGradeItem(gradeElements.get(i).children()); 
 				
 				// Adjusted total & points possible
-				if (current.getValidGrade() && !(current.getGradeName().equalsIgnoreCase("Total")|| current.getGradeName().equalsIgnoreCase("Weighted Total"))) { 
+				if (current.getValidGrade()) { 
 					
 					// Add
 					this.gradeItems.add(current);
-					this.adjTotal += current.getScore();
-					this.adjPointsPossible += current.getPointsPossible();
+					//this.adjTotal += current.getScore();
+					//this.adjPointsPossible += current.getPointsPossible();
 				}
 			}
 			this.isLoaded = true;
@@ -101,7 +101,7 @@ public class CurrentGrade {
 				gradeStr += "\n" + currentDetail.getGradeName();
 				gradeStr += " Score: " + currentDetail.getScore();
 				gradeStr += " Possible: " + currentDetail.getPointsPossible();
-				gradeStr += " Percentage: " + Math.round(currentDetail.getScore()/currentDetail.getPointsPossible()*100) + "%";
+				//gradeStr += " Percentage: " + Math.round(currentDetail.getScore()/currentDetail.getPointsPossible()*100) + "%";
 			}	
 		}
 		

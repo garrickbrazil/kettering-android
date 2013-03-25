@@ -295,18 +295,20 @@ public class Student {
 					String gradeLink = "https://blackboard.kettering.edu" + classGrades.get(i*2+1).childNode(0).childNode(0).attr("href");
 					String className = classGrades.get(i*2).text();
 					String titleTotal = classGrades.get(i*2+1).child(0).child(0).text();
-					
+					boolean valid = className.contains("WINTER") || className.contains("SPRING") || className.contains("SUMMER") || className.contains("FALL"); 
+
 					// Fix name format
 					if(className.split(":\\s").length > 0){
 						String[] split = className.split(":\\s");
 						className = "";
 						for(int j = 1; j < split.length; j++) className += split[j] + " ";
 					}
-					className = className.split("\\s-\\sWINTER")[0];
+					
+					className = className.split("\\s-\\s*+")[0];
 					
 					// Create
 					CurrentGrade current = new CurrentGrade(className, gradeLink, titleTotal);
-					this.currentGrades.add(current);
+					if (valid) this.currentGrades.add(current);
 				}
 			}
 			
@@ -327,13 +329,13 @@ public class Student {
 		try{
 
 			// Details
-			HttpGet gradeDetail = new HttpGet("https://blackboard.kettering.edu" + this.currentGrades.get(index).getLink());
+			HttpGet gradeDetail = new HttpGet(this.currentGrades.get(index).getLink());
 			HttpResponse gradeResponse = this.clientBlackboard.execute(gradeDetail);
 			
 			return this.currentGrades.get(index).storeGradeItems(HTMLParser.parse(gradeResponse));
 		}
 		
-		catch(Exception e){ return false; }
+		catch(Exception e){ e.printStackTrace(); return false; }
 		
 	}
 	

@@ -64,7 +64,7 @@ public class Library {
 	    	else if (this.type.equalsIgnoreCase("Series")) this.endURL = "&srchfield1=SER%5ESERIES%5ESERIES%5ETitle+Processing%5Eseries&library=KU&SearchNow=Search&user_id=kuweb";
 	    	else if (this.type.equalsIgnoreCase("Periodical")) this.endURL = "&srchfield1=PER%5EPERTITLE%5ESERIES%5ETitle Processing%5Eperiodical+title&library=KU&SearchNow=Search&user_id=kuweb";
 			
-			Document doc = Jsoup.parse(new URL("http://catalog.palnet.info/uhtbin/cgisirsi/x/0/0/57/5?search_type=search&searchdata1=" + search.replaceAll("\\s", "+") + this.endURL), 3000);
+			Document doc = Jsoup.parse(new URL("http://catalog.palnet.info/uhtbin/cgisirsi/x/0/0/57/5?search_type=search&searchdata1=" + search.replaceAll("\\s", "+") + this.endURL), 0);
 			Elements hitlist = doc.getElementsByClass("hit_list_item_info");
 			
 			
@@ -102,7 +102,7 @@ public class Library {
 		if (this.page + 1 <= this.maxPage){
 			try{
 			
-				Elements hitlistPage = Jsoup.parse(new URL("http://catalog.palnet.info" + this.action + "firsthit=&lasthit=&form_type=" + "JUMP%5E" + ((this.page*20) + 1)), 6000).getElementsByClass("hit_list_item_info");
+				Elements hitlistPage = Jsoup.parse(new URL("http://catalog.palnet.info" + this.action + "firsthit=&lasthit=&form_type=" + "JUMP%5E" + ((this.page*20) + 1)), 0).getElementsByClass("hit_list_item_info");
 				
 				this.page++;
 

@@ -44,27 +44,28 @@ import com.ku.ketteringapplication.R.drawable;
 public class MainActivity extends Activity {
 	
 	// Objects
-	private ProgressDialog loadDialog;
-	private TransferDirectory transDir;
-	private List<String> lastView;
+	private ProgressDialog load_dialog;
+	private TransferDirectory trans_dir;
+	private List<String> last_view;
 	private Student student;
 	private Events events;
-	private KUMenu kuMenu;
+	private KUMenu ku_menu;
 	private Directory dir;
 	private News news;
 	private Library lib;
 	private int width;
 	private int height;
+	private Context c;
 	
 	// Functions
-	private Icon[] iconsAll;
-	private Icon[] iconsGlob;
+	private Icon[] icons_all;
+	private Icon[] icons_glob;
 	
 	
 	// Constants
-	private final String bgColor = "#7F95FA", HOME = "HOME", MENU = "MENU", 
+	private final String bg_color = "#7F95FA", HOME = "HOME", MENU = "MENU", 
 			EVENTS = "EVENTS", NEWS = "NEWS", DIRECTORY = "DIRECTORY", 
-			LIBRARY = "LIBRARY";
+			LIBRARY = "LIBRARY", GRADES = "GRADES";
 	
 	/********************************************************************
 	 * Method: onCreate
@@ -74,70 +75,71 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         
 		super.onCreate(savedInstanceState); 
-        
-		// Initialize
-		this.transDir = new TransferDirectory();
-        this.lastView = new ArrayList<String>();
+		c = this;
+		// Initialize all objects
+		this.trans_dir = new TransferDirectory();
+        this.last_view = new ArrayList<String>();
 		this.student = new Student();
-        this.kuMenu = new KUMenu();
+        this.ku_menu = new KUMenu();
         this.events = new Events();
         this.dir = new Directory();
         this.lib = new Library();
         this.news = new News();
         
-        // Loading
-        this.loadDialog = new ProgressDialog(this);
-        this.loadDialog.setCanceledOnTouchOutside(false);
-        this.loadDialog.setIndeterminate(true);
-        this.loadDialog.setTitle("In progress");
-        this.loadDialog.setMessage("Loading...");
+        // Setup loading dialog
+        this.load_dialog = new ProgressDialog(this);
+        this.load_dialog.setCanceledOnTouchOutside(false);
+        this.load_dialog.setIndeterminate(true);
+        this.load_dialog.setTitle("In progress");
+        this.load_dialog.setMessage("Loading...");
         
-        // Icons for the grid
-        Icon events = new Icon("Events", drawable.events, eventsListener);
-        Icon news = new Icon("News", drawable.news, newsListener);
-        Icon menu = new Icon("Menu", drawable.menu, menuListener);
-        Icon scheduler = new Icon("Scheduler", drawable.coursescheduler, schedulerListener);
-        Icon map = new Icon("Map", drawable.maps, mapsListener);
-        Icon directory = new Icon("Directory", drawable.directory, directoryListener);
-        Icon transfer = new Icon("Transfer", drawable.transfer, transferListener);
-        Icon library = new Icon("Library", drawable.library, libraryListener);
-        Icon account = new Icon("Account", drawable.account, accountListener);
-        Icon grades = new Icon("Grades", drawable.grades, gradesListener);
-        Icon schedule = new Icon("Schedule", drawable.schedule, scheduleListener);
+        // Setup icons for the grid
+        Icon events = new Icon("Events", drawable.events, events_listener);
+        Icon news = new Icon("News", drawable.news, news_listener);
+        Icon menu = new Icon("Menu", drawable.menu, menu_listener);
+        Icon scheduler = new Icon("Scheduler", drawable.coursescheduler, scheduler_listener);
+        Icon map = new Icon("Map", drawable.maps, maps_listener);
+        Icon directory = new Icon("Directory", drawable.directory, directory_listener);
+        Icon transfer = new Icon("Transfer", drawable.transfer, transfer_listener);
+        Icon library = new Icon("Library", drawable.library, library_listener);
+        Icon account = new Icon("Account", drawable.account, account_listener);
+        Icon grades = new Icon("Grades", drawable.grades, grades_listener);
+        Icon schedule = new Icon("Schedule", drawable.schedule, schedule_listener);
         
+        // Global used when not logged in, all used when logged in
+        Icon[] icons_all = {events, news, menu, scheduler, map, directory, library, transfer, account, grades, schedule};
+        Icon[] icons_glob = {events, news, menu, scheduler, map, directory, library, transfer};
         
-        Icon[] iconsAll = {events, news, menu, scheduler, map, directory, library, transfer, account, grades, schedule};
-        Icon[] iconsGlob = {events, news, menu, scheduler, map, directory, library, transfer};
-        
-        this.iconsGlob = iconsGlob;
-        this.iconsAll = iconsAll;
-        
+        this.icons_glob = icons_glob;
+        this.icons_all = icons_all;
         
         setContentView(R.layout.activity_main);
         
-        // Used to adjust icon size (temporary work-around)
+        // Used to adjust icon size (temporary work-around) TODO
         Display display = getWindowManager().getDefaultDisplay(); 
         this.width = display.getWidth();
         this.height = display.getHeight();
         
-        ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.iconsGlob, this.height, this.width));
+        ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.icons_glob, this.height, this.width));
         
-        
-        /*EditText login = (EditText) findViewById(R.id.signinField);
+        /*
+        EditText login = (EditText) findViewById(R.id.signinField);
         EditText pass = (EditText) findViewById(R.id.passwordField);
         
         login.setText("");
         pass.setText("");
         
         new Login().execute(this.student);
+        
         */
+        
         
     }
     
 
 	/********************************************************************
 	 * Method: onCreateOptionsMenu
-	 * Purpose: method to inflate menu 
+	 * Purpose: method to inflate options menu 
 	/*******************************************************************/
     public boolean onCreateOptionsMenu(Menu menu) {
     	
@@ -153,63 +155,70 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
     	
     	
-    	if(this.lastView.size() > 0){
+    	if(this.last_view.size() > 0){
     		
-    		String last = lastView.get(0);
-    		
-    		if(last.equals(HOME)) homeScreen(); 
-	    	else if(last.equals(MENU)) new KUMenuTask().execute(kuMenu);
+    		String last = last_view.get(0);
+    	
+    		// Move to latest state 
+	    	if(last.equals(MENU)) new KUMenuTask().execute(ku_menu);
 	    	else if (last.equals(EVENTS)) new EventsTask().execute(events);
 	    	else if (last.equals(NEWS)) new NewsTask().execute(news);
 	    	else if (last.equals(DIRECTORY)){ setContentView(R.layout.directory); populateSearch(); }
 	    	else if (last.equals(LIBRARY)){ setContentView(R.layout.library); populateLibrary(); }
+	    	else if (last.equals(GRADES)){ setContentView(R.layout.grades); populateGrades(); }
 	    	else homeScreen();
 	    	
-	    	this.lastView.remove(0);
+	    	// Remove 1st state
+	    	this.last_view.remove(0);
     	}
     }
     
     
     // Menu click
-    private OnClickListener menuListener = new OnClickListener() { 
+    private OnClickListener menu_listener = new OnClickListener() { 
     	public void onClick(View v) { 
-    		lastView.add(0, HOME); 
-    		new KUMenuTask().execute(kuMenu); 
+    		
+    		last_view.add(0, HOME); 
+    		new KUMenuTask().execute(ku_menu); 
     	} 
     };
     
     
     // Events click
-    private OnClickListener eventsListener = new OnClickListener() {
+    private OnClickListener events_listener = new OnClickListener() {
     	public void onClick(View v) {
-    		lastView.add(0, HOME); 
+    		
+    		last_view.add(0, HOME); 
     		new EventsTask().execute(events); 
     	} 
     };
     
     
     // News click
-    private OnClickListener newsListener = new OnClickListener() { 
+    private OnClickListener news_listener = new OnClickListener() { 
     	public void onClick(View v) { 
-    		lastView.add(0, HOME); 
+    		
+    		last_view.add(0, HOME); 
     		new NewsTask().execute(news); 
     	} 
     };
     
     
     // Transfer click
-    private OnClickListener transferListener = new OnClickListener() { 
+    private OnClickListener transfer_listener = new OnClickListener() { 
     	public void onClick(View v) { 
-    		lastView.add(0, HOME); 
-    		new TransferTask().execute(transDir); 
+    		
+    		last_view.add(0, HOME); 
+    		new TransferTask().execute(trans_dir); 
     	} 
     };
     
     
     // Directory click
-    private OnClickListener directoryListener = new OnClickListener() { 
+    private OnClickListener directory_listener = new OnClickListener() { 
     	public void onClick(View v) { 
-    		lastView.add(0, HOME); 
+    		
+    		last_view.add(0, HOME); 
     		setContentView(R.layout.directory); 
     		populateSearch(); 
     	} 
@@ -217,9 +226,10 @@ public class MainActivity extends Activity {
     
     
     // Library click
-    private OnClickListener libraryListener = new OnClickListener() { 
+    private OnClickListener library_listener = new OnClickListener() { 
     	public void onClick(View v) { 
-    		lastView.add(0, HOME); 
+    		
+    		last_view.add(0, HOME); 
     		setContentView(R.layout.library); 
     		populateLibrary(); 
     	} 
@@ -227,15 +237,17 @@ public class MainActivity extends Activity {
     
     
     // Map click
-    private OnClickListener mapsListener = new OnClickListener() { 
+    private OnClickListener maps_listener = new OnClickListener() { 
     	public void onClick(View v) { 
-	    	Intent myIntent = new Intent(MainActivity.this, Map.class);
+	    	
+    		// Load map activity
+    		Intent myIntent = new Intent(MainActivity.this, Map.class);
 	    	MainActivity.this.startActivity(myIntent); 
 	    } 
     };
     
     // Schedule click 
-    private OnClickListener scheduleListener = new OnClickListener() {
+    private OnClickListener schedule_listener = new OnClickListener() {
     	public void onClick(View v) { 
     		
     		new ScheduleTask().execute(student);
@@ -243,22 +255,27 @@ public class MainActivity extends Activity {
     };
     
     // Scheduler click
-    private OnClickListener schedulerListener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };
+    private OnClickListener scheduler_listener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };
     
     
     // Account click
-    private OnClickListener accountListener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };
+    private OnClickListener account_listener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };
     
     
     // Grades click
-    private OnClickListener gradesListener = new OnClickListener() { 
+    private OnClickListener grades_listener = new OnClickListener() { 
     	public void onClick(View v) { 
     		
-    		lastView.add(0, HOME);
+    		last_view.add(0, HOME);
     		new GradesTask().execute(student);
     	} 
     };    
     
+    public void showAlert(String alert){
+    	
+    	Alert.show(c, alert);
+    	
+    }
     
     
     /********************************************************************
@@ -286,7 +303,7 @@ public class MainActivity extends Activity {
 			LinearLayout.LayoutParams gridContainerParams = (LayoutParams) gridContainer.getLayoutParams();
 			
 			// Show functions
-			grid.setAdapter(new ImageAdapter(getApplicationContext(), this.iconsAll, height, width));
+			grid.setAdapter(new ImageAdapter(getApplicationContext(), this.icons_all, height, width));
 
 			// Show & hide
 			signinField.setVisibility(View.GONE);
@@ -310,7 +327,7 @@ public class MainActivity extends Activity {
     		LinearLayout.LayoutParams gridContainerParams = (LayoutParams) gridContainer.getLayoutParams();
     		
             // Show functions
-            grid.setAdapter(new ImageAdapter(this, this.iconsGlob, height, width));
+            grid.setAdapter(new ImageAdapter(this, this.icons_glob, height, width));
             
             // Show & hide
             signinField.setVisibility(View.VISIBLE);
@@ -337,7 +354,7 @@ public class MainActivity extends Activity {
     
     /********************************************************************
      * Method: changeTransferType
-     * Purpose: changes tranfer type to given type
+     * Purpose: changes transfer type to given type
     /*******************************************************************/
     public void changeTransferType(View view){
     	
@@ -345,8 +362,8 @@ public class MainActivity extends Activity {
     	String type = button.getText().toString();
     	
     	// Type
-    	if(type.equals("By Course")) this.transDir.setType(transDir.BYCOURSE);
-    	if(type.equals("By College")) this.transDir.setType(transDir.BYCOLLEGE);
+    	if(type.equals("By Course")) this.trans_dir.setType(trans_dir.BYCOURSE);
+    	if(type.equals("By College")) this.trans_dir.setType(trans_dir.BYCOLLEGE);
     	
     	populateTransfer();
     }
@@ -356,7 +373,7 @@ public class MainActivity extends Activity {
      * Method: searchTransfer
      * Purpose: searches a transfer
     /*******************************************************************/
-    public void searchTransfer(View view){ new TransferSearchTask().execute(this.transDir); }
+    public void searchTransfer(View view){ new TransferSearchTask().execute(this.trans_dir); }
     
     
     /********************************************************************
@@ -367,9 +384,9 @@ public class MainActivity extends Activity {
     	
     	Button gradeButton = (Button) view;
     	
-    	if(gradeButton.getText() == "Current") this.student.setGradesPage(0);
-    	else if(gradeButton.getText() == "Final") this.student.setGradesPage(1);
-    	else if(gradeButton.getText() == "Midterm") this.student.setGradesPage(1);
+    	if(gradeButton.getText().equals("Current")) this.student.setGradesPage(0);
+    	else if(gradeButton.getText().equals("Final")) this.student.setGradesPage(1);
+    	else if(gradeButton.getText().equals("Midterm")) this.student.setGradesPage(2);
     	
     	populateGrades();
     }
@@ -396,29 +413,43 @@ public class MainActivity extends Activity {
     	if(this.student.getGradesPage() == 0){
     	
     		currentButton.setBackgroundResource(R.layout.food_menu_button_selected);
-    		
     		List<CurrentGrade> currentGrades = this.student.getCurrentGrades();
+    		
     		for(int i = 0; i < currentGrades.size(); i++){
     			
     			CurrentGrade current = currentGrades.get(i);
     			
     			TableLayout currentView = (TableLayout) inflater.inflate(R.layout.grade, null);
-    			//View separator = inflater.inflate(R.layout.separator_horizontal, null);
     			TextView title = (TextView) currentView.findViewById(R.id.title);
     			TextView total = (TextView) currentView.findViewById(R.id.total);
+    			TextView index = (TextView) currentView.findViewById(R.id.index);
     			
     			title.setText(current.getCourseName());
     			total.setText(current.getTitleTotal() + "");
+    			index.setText(i + "");
+    			
+    			currentView.setOnClickListener(new OnClickListener() {
+        			public void onClick(View v) {
+        				
+        				// Always hidden
+        				TextView indexView = (TextView) v.findViewById(R.id.index);
+        				
+    	        		// Article parameters
+        				String index = indexView.getText().toString();
+        				String[] params = {index};
+        				
+        				new GradeSingleTask().execute(params);
+                    }
+                });
     			
     			gradesContainer.addView(currentView);
-    			//if(i != currentGrades.size() - 1) gradesContainer.addView(separator);
     		}
     		
     	}
     	
     	// Final grades
     	else if(this.student.getGradesPage() == 1){
-    		midtermButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    		finalButton.setBackgroundResource(R.layout.food_menu_button_selected);
     	}
     	
     	// Midterm grades
@@ -454,7 +485,7 @@ public class MainActivity extends Activity {
     	
     	// Elements
     	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-    	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, this.transDir.getOptionsString());
+    	ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, this.trans_dir.getOptionsString());
     	LinearLayout transContainer = (LinearLayout) findViewById(R.id.transferContainer);
     	Button byCollegeButton = (Button) findViewById(R.id.byCollegeButton);
     	Button byCourseButton = (Button) findViewById(R.id.byCourseButton);
@@ -465,11 +496,11 @@ public class MainActivity extends Activity {
     	transContainer.removeAllViews();
     	
     	// Last session
-    	if(!transDir.getSearchString().equals("")) searchBar.setText(transDir.getSearchString());
-    	selectList.setSelection(transDir.getCollegeListPosition(), true);
+    	if(!trans_dir.getSearchString().equals("")) searchBar.setText(trans_dir.getSearchString());
+    	selectList.setSelection(trans_dir.getCollegeListPosition(), true);
     	
     	
-    	if (transDir.getType() == transDir.BYCOLLEGE){
+    	if (trans_dir.getType() == trans_dir.BYCOLLEGE){
     		
     		// Settings
     		byCourseButton.setBackgroundResource(R.layout.food_menu_button);
@@ -478,9 +509,9 @@ public class MainActivity extends Activity {
     		searchBar.setVisibility(View.GONE);
     		
     		
-	    	if(transDir.getResultsByCollege() != null){
+	    	if(trans_dir.getResultsByCollege() != null){
 	    	
-	    		for(TransferCourse course : transDir.getResultsByCollege()){
+	    		for(TransferCourse course : trans_dir.getResultsByCollege()){
 	    			
 	    			
 	    			LinearLayout currentView = (LinearLayout) inflater.inflate(R.layout.transfer_course_college, null);		
@@ -526,11 +557,11 @@ public class MainActivity extends Activity {
 	    		}
 	    	}
 	    	
-	    	this.loadDialog.dismiss();
+	    	this.load_dialog.dismiss();
     	}
     	
     	
-    	else if (transDir.getType() == transDir.BYCOURSE) {
+    	else if (trans_dir.getType() == trans_dir.BYCOURSE) {
     		
     		// Settings
     		byCourseButton.setBackgroundResource(R.layout.food_menu_button_selected);
@@ -539,9 +570,9 @@ public class MainActivity extends Activity {
     		selectList.setVisibility(View.GONE);
     		
     		
-    		if(transDir.getResultsByCourse() != null){
+    		if(trans_dir.getResultsByCourse() != null){
 	    		
-	    		for(TransferCourse course : transDir.getResultsByCourse()){
+	    		for(TransferCourse course : trans_dir.getResultsByCourse()){
 	    			
 	    			LinearLayout currentView = (LinearLayout) inflater.inflate(R.layout.transfer_course, null);
 	    	
@@ -586,7 +617,7 @@ public class MainActivity extends Activity {
 	    		}
 	    	}
     		
-    		this.loadDialog.dismiss();
+    		this.load_dialog.dismiss();
     	}
     }
     
@@ -917,7 +948,7 @@ public class MainActivity extends Activity {
     		
     		
     		// Fields
-    		img.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:" + bgColor + "\">" + newsList.get(count).getImg() + "</body>", "text/html", null, null);
+    		img.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:" + bg_color + "\">" + newsList.get(count).getImg() + "</body>", "text/html", null, null);
         	img.setVerticalScrollBarEnabled(false);
     		img.setHorizontalFadingEdgeEnabled(false);
     		authorDate.setText(newsList.get(count).getInfo());
@@ -945,7 +976,7 @@ public class MainActivity extends Activity {
     	((Button) findViewById(R.id.fri)).setBackgroundResource((dayOfWeek == 5)? R.layout.food_menu_button_selected:R.layout.food_menu_button);
     	((Button) findViewById(R.id.sat)).setBackgroundResource((dayOfWeek == 6)? R.layout.food_menu_button_selected:R.layout.food_menu_button);
     	
-        DailyMenu day = kuMenu.getDayOfWeek(dayOfWeek);
+        DailyMenu day = ku_menu.getDayOfWeek(dayOfWeek);
         
     	// Data        
         ((TextView) findViewById(R.id.date)).setText(day.getDate());
@@ -1009,7 +1040,7 @@ public class MainActivity extends Activity {
     	GridView grid = (GridView) findViewById(R.id.grid);
     	
         // Show functions
-        grid.setAdapter(new ImageAdapter(this, this.iconsGlob, height, width));
+        grid.setAdapter(new ImageAdapter(this, this.icons_glob, height, width));
         
         // Show & hide
         ((EditText) findViewById(R.id.signinField)).setVisibility(View.VISIBLE);
@@ -1077,7 +1108,7 @@ public class MainActivity extends Activity {
 				LinearLayout loginContainer = (LinearLayout) findViewById(R.id.loginContainer);
 				
 				// Functions
-				((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(getApplicationContext(), iconsAll, height, width));
+				((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(getApplicationContext(), icons_all, height, width));
 
 				// Show & hide
 				((EditText) findViewById(R.id.signinField)).setVisibility(View.GONE);
@@ -1101,11 +1132,11 @@ public class MainActivity extends Activity {
 			// Failed
 			else ((TextView) findViewById(R.id.loginNotification)).setText("Login failed.");
 			
-			if(loadDialog.isShowing()) loadDialog.dismiss();
+			if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1142,11 +1173,11 @@ public class MainActivity extends Activity {
         		populateTransfer();
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1178,11 +1209,11 @@ public class MainActivity extends Activity {
         		populateTransfer();
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1212,11 +1243,11 @@ public class MainActivity extends Activity {
         	// Show
         	if(success) populateSearch();
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1245,11 +1276,11 @@ public class MainActivity extends Activity {
         	// Show
         	if(success) populateLibrary();
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1303,14 +1334,14 @@ public class MainActivity extends Activity {
         		WebView webView = (WebView) findViewById(R.id.webView);
         		webView.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#7F95FA\">" + html + "</body>", "text/html", null, null);
         		
-        		lastView.add(0, EVENTS);
+        		last_view.add(0, EVENTS);
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1363,14 +1394,14 @@ public class MainActivity extends Activity {
         		WebView webView = (WebView) findViewById(R.id.webView);
         		webView.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#7F95FA\">" + html + "</body>", "text/html", null, null);
         		
-        		lastView.add(0, NEWS);
+        		last_view.add(0, NEWS);
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1396,11 +1427,11 @@ public class MainActivity extends Activity {
         	// Show
         	if(success) populateLibrary();
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1432,11 +1463,11 @@ public class MainActivity extends Activity {
 	        	populateNews();
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1468,11 +1499,11 @@ public class MainActivity extends Activity {
 	        	populateEvents();
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1505,11 +1536,11 @@ public class MainActivity extends Activity {
 	        	newsScroll.post(new Runnable() { public void run() { newsScroll.fullScroll(ScrollView.FOCUS_DOWN); } });
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1543,11 +1574,11 @@ public class MainActivity extends Activity {
 	        	eventsScroll.post(new Runnable() { public void run() { eventsScroll.fullScroll(ScrollView.FOCUS_DOWN); } });
         	}
         	
-        	if(loadDialog.isShowing()) loadDialog.dismiss();
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1560,7 +1591,7 @@ public class MainActivity extends Activity {
     /*******************************************************************/
     private class ScheduleTask extends AsyncTask<Student, Void, Boolean> {
     	
-    	@Override
+    	@SuppressWarnings("deprecation") @Override
         protected Boolean doInBackground(Student... student) {  
     		
     		int year = Calendar.getInstance().getTime().getYear() + 1900;
@@ -1585,16 +1616,87 @@ public class MainActivity extends Activity {
 	            populateSchedule();
     		}
     		
-            if(loadDialog.isShowing()) loadDialog.dismiss();
+            if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
         
     }
+    
+
+    /********************************************************************
+     * Task: GradeSingleTask
+     * Purpose: task to store and display a single course grade
+    /*******************************************************************/
+    private class GradeSingleTask extends AsyncTask<String, Void, String> {
+    	
+    	@Override
+        protected String doInBackground(String... params) {  
+    		
+    		
+			try {
+				
+				if(!student.getCurrentGrades().get((Integer.parseInt(params[0]))).getIsLoaded()){
+					
+					if(student.storeGradeItem((Integer.parseInt(params[0])))) return params[0];
+					else return null;
+				}
+				
+				else return params[0];
+			}
+			catch (Exception e){ e.printStackTrace(); return null;}
+			
+        }      
+
+    	@Override
+        protected void onPostExecute(String param) {
+        	
+        	if(param != null){
+        		
+        		last_view.add(0, GRADES);
+        		
+        		CurrentGrade grade = student.getCurrentGrades().get(Integer.parseInt(param));
+        		LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        		List<CurrentGradeItem> items = grade.getGradeItems();
+        		
+        		// Show
+        		setContentView(R.layout.single_grade);
+       
+        		TextView course_title = (TextView) findViewById(R.id.currentGradeName); 		
+        		LinearLayout grade_container = (LinearLayout) findViewById(R.id.gradesContainer);
+        		course_title.setText(grade.getCourseName());
+        		
+        		for(CurrentGradeItem item : items){
+        			
+        			TableLayout current_view = (TableLayout) inflater.inflate(R.layout.grade_item, null);
+        			TextView title = (TextView) current_view.findViewById(R.id.title);
+        			TextView total = (TextView) current_view.findViewById(R.id.total);
+        			TextView possible = (TextView) current_view.findViewById(R.id.possible);
+        			
+        			title.setText(item.getGradeName());
+        			total.setText(item.getScore() + "");
+        			possible.setText(item.getPointsPossible() + "");
+        			
+        			grade_container.addView(current_view);
+        		}
+        		
+        	}
+        	
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { load_dialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+
     
     /********************************************************************
      * Task: GradesTask
@@ -1631,11 +1733,11 @@ public class MainActivity extends Activity {
 	            populateGrades();
     		}
     		
-            if(loadDialog.isShowing()) loadDialog.dismiss();
+            if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
@@ -1657,7 +1759,8 @@ public class MainActivity extends Activity {
     		else return menu[0].storeMenu();
         }      
 
-    	@Override
+    	@SuppressWarnings("deprecation")
+		@Override
         protected void onPostExecute(Boolean success) {
         	
     		if(success){
@@ -1667,11 +1770,11 @@ public class MainActivity extends Activity {
 	            populateMenu(Calendar.getInstance().getTime().getDay());
     		}
     		
-            if(loadDialog.isShowing()) loadDialog.dismiss();
+            if(load_dialog.isShowing()) load_dialog.dismiss();
 		}
 
         @Override
-        protected void onPreExecute() { loadDialog.show(); }
+        protected void onPreExecute() { load_dialog.show(); }
 
         @Override
         protected void onProgressUpdate(Void... values) { }

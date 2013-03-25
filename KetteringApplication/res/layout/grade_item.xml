@@ -19,29 +19,28 @@
             android:textStyle="bold"
             android:textSize="14dp"
             android:gravity="left"
-            android:layout_span="14"
+            android:layout_span="12"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="10dp"
     		android:layout_marginBottom="10dp" >
-        </TextView>
- 		<TextView
-  		    android:id="@+id/index"
-  		    android:textColor="#000000"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_span="4"
-            android:gravity="center"
-            android:textSize="14dp"
-            android:visibility="gone" 
-            android:layout_marginTop="10dp"
-    		android:layout_marginBottom="10dp">
         </TextView>
   		<TextView
   		    android:id="@+id/total"
   		    android:textColor="#000000"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_span="4"
+            android:layout_span="6"
+            android:gravity="center"
+            android:textSize="14dp" 
+            android:layout_marginTop="10dp"
+    		android:layout_marginBottom="10dp">
+        </TextView>
+        <TextView
+  		    android:id="@+id/possible"
+  		    android:textColor="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_span="6"
             android:gravity="center"
             android:textSize="14dp" 
             android:layout_marginTop="10dp"

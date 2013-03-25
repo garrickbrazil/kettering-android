@@ -11,8 +11,8 @@ public class CurrentGradeItem {
 	// Properties
 	private String gradeName;
 	private boolean validGrade;
-	private double score;
-	private double pointsPossible;
+	private String score;
+	private String pointsPossible;
 	
 	
 	/********************************************************************
@@ -32,35 +32,19 @@ public class CurrentGradeItem {
 		
 		
 			// Score
-			try {
-				this.score = Double.parseDouble(gradeDetail.get(5).text());
-			}
 			
-			// Invalid
-			catch(Exception e) {
-				this.score = -1;
-				this.validGrade = false;
-			}
-			
+			this.score = gradeDetail.get(5).text();
 			
 			// Points Possible
-			try {
-				this.pointsPossible = Double.parseDouble(gradeDetail.get(6).text());
-			}
-			
-			// Invalid
-			catch(Exception e) {
-				this.pointsPossible = -1;
-				this.validGrade = false;
-			}
+			this.pointsPossible = gradeDetail.get(6).text();
 		}
 		
 		// Not enough children
 		else {
 			this.validGrade = false;
 			this.gradeName = "error";
-			this.score = -1;
-			this.pointsPossible = -1;
+			this.score = "";
+			this.pointsPossible = "";
 		}
 		
 	}
@@ -71,7 +55,7 @@ public class CurrentGradeItem {
 	/*******************************************************************/
 	public String getGradeName() { return this.gradeName; }
 	public boolean getValidGrade() { return this.validGrade; }
-	public double getScore() { return this.score; }
-	public double getPointsPossible() { return this.pointsPossible; }
+	public String getScore() { return this.score; }
+	public String getPointsPossible() { return this.pointsPossible; }
 	
 }
