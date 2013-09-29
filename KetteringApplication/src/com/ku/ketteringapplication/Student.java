@@ -1,6 +1,5 @@
 package com.ku.ketteringapplication;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpEntity;
@@ -16,6 +15,7 @@ import org.apache.http.message.BasicNameValuePair;
 import android.util.Base64;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
@@ -44,7 +44,13 @@ public class Student {
 	private boolean finalGradesLoaded;
 	private boolean midtermGradesLoaded;
 	private int gradesPage;
-	
+	private List<TermOption> midtermTermList;
+	private List<TermOption> finalTermList;
+	private boolean accountLoaded;
+	private boolean midtermListLoaded;
+	private boolean finalListLoaded;
+	private int finalSelectedTerm;
+	private int midtermSelectedTerm;
 	
 	/********************************************************************
 	 * Constructor: Student()
@@ -63,13 +69,21 @@ public class Student {
 		this.currentGrades = new ArrayList<CurrentGrade>();
 		this.finalGrades = new ArrayList<FinalGrade>();
 		this.midtermGrades = new ArrayList<MidtermGrade>();
+		this.finalTermList = new ArrayList<TermOption>();
+		this.midtermTermList = new ArrayList<TermOption>();
 		this.scheduleHTML = "";
 		this.gradesPage = 0;
+		this.accountLoaded = false;
 		this.currentGradesLoaded = false;
 		this.finalGradesLoaded = false;
 		this.midtermGradesLoaded = false;
 		this.scheduleLoaded = false;
+		this.finalListLoaded = false;
+		this.midtermListLoaded = false;
+		this.finalSelectedTerm = -1;
+		this.midtermSelectedTerm = -1;
 	}
+	
 	
 		
 	/********************************************************************
@@ -92,6 +106,13 @@ public class Student {
 	public boolean getCurrentGradesLoaded(){ return this.currentGradesLoaded; }
 	public boolean getFinalGradesLoaded(){ return this.finalGradesLoaded; }
 	public boolean getMidtermGradesLoaded(){ return this.midtermGradesLoaded; }
+	public List<TermOption> getMidtermList(){ return this.midtermTermList; }
+	public List<TermOption> getFinalTermList(){ return this.finalTermList; }
+	public boolean getFinalListLoaded(){ return this.finalListLoaded; }
+	public boolean getMidtermListLoaded(){ return this.midtermListLoaded; }
+	public int getMidtermSelectedTerm(){ return this.midtermSelectedTerm; }
+	public int getFinalSelectedTerm(){ return this.finalSelectedTerm; }
+	public boolean getAccountLoaded(){ return this.accountLoaded; }
 	
 	
 	/********************************************************************
@@ -206,14 +227,6 @@ public class Student {
 			
 			String html = HTMLParser.parse(response);
 			
-			// Write to file
-			PrintWriter printer = new PrintWriter("artifacts/transcript.html");
-			printer.print(html);	    	
-			printer.close();
-			
-			System.out.println("Successfully stored \"transcript.html\".");
-			
-			
 			this.transcript = html;
 		}
 		
@@ -241,7 +254,12 @@ public class Student {
 
 						
 			// Store Schedules
-			for (int i = 0; i < classSchedules.size()/2; i++) this.courses.add(new Course(classSchedules.get(i*2), classSchedules.get(i*2 + 1)));
+			for (int i = 0; i < classSchedules.size()/2; i++) {
+				
+					for (int index = 0, originalSize = classSchedules.get(i*2 + 1).getElementsByTag("tr").size() - 1; index < originalSize; index++){
+						this.courses.add(new Course(classSchedules.get(i*2), classSchedules.get(i*2 + 1).getElementsByTag("tr").get(index + 1)));
+					}
+			}
 			
 			/*
 			schedule = new HttpGet("https://jweb.kettering.edu/cku1/bwskfshd.P_CrseSchdDetl?term_in=" + term);
@@ -289,6 +307,7 @@ public class Student {
 			// Store grades
 			for (int i = 0; i < classGrades.size()/2; i++) {
 				
+				// Check size
 				if(classGrades.get(i*2 +1).childNodes().size() > 0 && classGrades.get(i*2 +1).childNode(0).childNodes().size() > 0){
 					
 					// Parameters
@@ -298,10 +317,11 @@ public class Student {
 					boolean valid = className.contains("WINTER") || className.contains("SPRING") || className.contains("SUMMER") || className.contains("FALL"); 
 
 					// Fix name format
-					if(className.split(":\\s").length > 0){
+					if(className.split(":\\s").length > 2){
 						String[] split = className.split(":\\s");
 						className = "";
-						for(int j = 1; j < split.length; j++) className += split[j] + " ";
+						//for(int j = 1; j < split.length; j++) 
+						className += split[2] + " ";
 					}
 					
 					className = className.split("\\s-\\s*+")[0];
@@ -339,27 +359,108 @@ public class Student {
 		
 	}
 	
+	/********************************************************************
+	 * Method: storeFinalTermList()
+	 * Purpose: store final term list
+	/*******************************************************************/
+	public boolean storeFinalTermList(){
+		
+		try {
+			
+			// Connect
+			HttpGet listGet = new HttpGet("https://jweb.kettering.edu/cku1/wbwskogrd.P_ViewTermGrde");
+			HttpResponse response = this.clientBanner.execute(listGet);
+			
+			String html = HTMLParser.parse(response);
+			
+			Elements list = Jsoup.parse(html).getElementsByTag("select");
+			
+			// Correct amount ?
+			if (list.size() > 0 && 	list.get(0).children().size() > 0){
+				
+				Elements options = list.get(0).children();
+				
+				for(Element option : options) this.finalTermList.add(new TermOption(option.text(), option.attr("value")));
+			
+				this.finalListLoaded = true;
+				return true;
+			}
+			
+			else{
+				
+				this.finalListLoaded = false;
+				return false;
+			}
+		}
+		
+		catch(Exception e){
+			
+			this.finalListLoaded = false;
+			e.printStackTrace(); 
+			return false;
+		}
+
+	}
+	
+
+	/********************************************************************
+	 * Method: storeMidtermList()
+	 * Purpose: stores available list of midterm terms and years
+	/*******************************************************************/
+	public boolean storeMidtermList(){
+		
+		try {
+			
+			// Connect
+			HttpGet listGet = new HttpGet("https://jweb.kettering.edu/cku1/bwskmgrd.p_write_term_selection");
+			HttpResponse response = this.clientBanner.execute(listGet);
+			
+			String html = HTMLParser.parse(response);
+			
+			Elements list = Jsoup.parse(html).getElementsByTag("select");
+			
+			// Correct amount ?
+			if (list.size() > 0 && 	list.get(0).children().size() > 0){
+				
+				Elements options = list.get(0).children();
+				
+				for(Element option : options) this.midtermTermList.add(new TermOption(option.text(), option.attr("value")));
+				
+				this.midtermListLoaded = true;
+				return true;
+			}
+			
+			else {
+				this.midtermListLoaded = false;
+				return false;
+			}
+		}
+		
+		catch(Exception e){ 
+		
+			e.printStackTrace(); 
+			this.midtermListLoaded = false;
+			return false; 
+		}
+
+	}
 	
 	/********************************************************************
 	 * Method: storeFinalGrades()
 	 * Purpose: store final grades to memory
 	/*******************************************************************/
-	public void storeFinalGrades(int term){
+	public boolean storeFinalGrades(String term, int pageIndex){
 		
 		try {
+			
+			this.finalSelectedTerm = pageIndex;
+			this.finalGrades = new ArrayList<FinalGrade>();
 			
 			// Connect
 			HttpGet finalGet = new HttpGet("https://jweb.kettering.edu/cku1/wbwskogrd.P_ViewGrde?term_in=" + term + "&inam=on&snam=on&sgid=on");
 			HttpResponse response = this.clientBanner.execute(finalGet);
 			
 			String html = HTMLParser.parse(response);
-			
-			// Write to file
-			PrintWriter printer = new PrintWriter("artifacts/finalgrades.html");
-			printer.print(html);	    	
-			printer.close();
-			
-			System.out.println("Successfully stored \"finalgrades.html\"");
 			
 			Elements tables = Jsoup.parse(html).getElementsByClass("datadisplaytable");
 			
@@ -376,12 +477,14 @@ public class Student {
 				
 				// Add final grades
 				for(int i = 0; i < courses.size();  i++) if(courses.get(i).getElementsByTag("td").size() == 12) this.finalGrades.add(new FinalGrade(courses.get(i).getElementsByTag("td")));
-				
+			
+				return true;
 			}
 			
+			else return false;
 		}
 		
-		catch(Exception e){ e.printStackTrace(); }
+		catch(Exception e){ e.printStackTrace(); return false; }
 
 	}
 	
@@ -390,22 +493,18 @@ public class Student {
 	 * Method: storeMidtermGrades()
 	 * Purpose: store midterm grades to memory
 	/*******************************************************************/
-	public void storeMidtermGrades(int term){
+	public boolean storeMidtermGrades(String term, int pageIndex){
 		
 		try {
+			
+			this.midtermSelectedTerm = pageIndex;
+			this.midtermGrades = new ArrayList<MidtermGrade>();
 			
 			// Connect
 			HttpGet midtermGet = new HttpGet("https://jweb.kettering.edu/cku1/bwskmgrd.p_write_midterm_grades?term_in=" + term);
 			HttpResponse response = this.clientBanner.execute(midtermGet);
 			
 			String html = HTMLParser.parse(response);
-			
-			// Write to file
-			PrintWriter printer = new PrintWriter("artifacts/midtermgrades.html");
-			printer.print(html);	    	
-			printer.close();
-			
-			System.out.println("Successfully stored \"midtermgrades.html\"");
 			
 			Elements tables = Jsoup.parse(html).getElementsByClass("datadisplaytable");
 			
@@ -419,12 +518,14 @@ public class Student {
 				
 				// Store midterm grades 
 				for(int i = 0; i < courses.size();  i++) if(courses.get(i).getElementsByTag("td").size() >= 8) this.midtermGrades.add(new MidtermGrade(courses.get(i).getElementsByTag("td")));
-				
+			
+				return true;
 			}
 			
+			else return false;
 		}
 		
-		catch(Exception e){ e.printStackTrace(); }
+		catch(Exception e){ e.printStackTrace(); return false; }
 	}
 	
 	
@@ -432,7 +533,7 @@ public class Student {
 	 * Method: storeAccount()
 	 * Purpose: store financial account information to memory
 	/*******************************************************************/
-	public void storeAccount(){
+	public boolean storeAccount(){
 		
 		try {
 			
@@ -442,25 +543,103 @@ public class Student {
 			
 			String html = HTMLParser.parse(response);
 			
-			// Write to file
-			PrintWriter printer = new PrintWriter("artifacts/accountTotal.html");
-			printer.print(html);	    	
-			printer.close();
-			
-			System.out.println("Successfully stored \"accountTotal.html\"");
-			
-			
 			Elements elements = Jsoup.parse(html).getElementsByClass("datadisplaytable");
 		
 			// Set account info
-			if(elements.size() > 0 && elements.get(0).getElementsByTag("tbody").size() > 0 && elements.get(0).getElementsByTag("tbody").get(0).getElementsByTag("tr").size() > 6) this.accountTotal = new AccountTotal(elements.get(0).getElementsByTag("tbody").get(0).getElementsByTag("tr"));
+			if(elements.size() > 0 && elements.get(0).getElementsByTag("tbody").size() > 0 && elements.get(0).getElementsByTag("tbody").get(0).getElementsByTag("tr").size() > 6){
+				this.accountTotal = new AccountTotal(elements.get(0).getElementsByTag("tbody").get(0).getElementsByTag("tr"));
+				
+				this.accountLoaded = true;
+				return true;
+			}
+			
+			else{
+				
+				this.accountLoaded = false;
+				return false;
+			}
 			
 		}
 		
-		catch(Exception e){ e.printStackTrace(); }
+		catch(Exception e){ 
+			e.printStackTrace();
+			return false;
+		}
 		
+	}
+
+	
+	/********************************************************************
+	 * Method: getFinalListString
+	 * Purpose: converts final term list into String list
+	/*******************************************************************/
+	public List<String> getFinalListString(){
+		
+		List<String> finalList = new ArrayList<String>();
+		
+		for (TermOption term : finalTermList) finalList.add(term.getName());
+		
+		return finalList;
+	}
+	
+	/********************************************************************
+	 * Method: getMidtermListString
+	 * Purpose: converts midterm term list into String list
+	/*******************************************************************/
+	public List<String> getMidtermListString(){
+		
+		List<String> midtermList = new ArrayList<String>();
+		
+		for (TermOption term : midtermTermList) midtermList.add(term.getName());
+		
+		return midtermList;
+	}
+	
+	/********************************************************************
+	 * Method: getFinalCodeByName
+	 * Purpose: gets the correct final term code for the terms name
+	/*******************************************************************/
+	public String getFinalCodeByName(String name){
+		
+		String code = "";
+		
+		for (TermOption term : finalTermList) if(term.getName().equals(name)) code = term.getCode();
+		
+		return code;
+	}
+	
+	/********************************************************************
+	 * Method: getMidtermCodeByName
+	 * Purpose: gets the correct Midterm code for the terms name
+	/*******************************************************************/
+	public String getMidtermCodeByName(String name){
+		
+		String code = "";
+		
+		for (TermOption term : midtermTermList) if(term.getName().equals(name)) code = term.getCode();
+		
+		return code;
 	}
 	
 }
 
 
+
+/********************************************************************
+ * Class: TermOption
+ * Purpose: stores an acceptable term for either final or midterm grades
+/*******************************************************************/
+class TermOption{
+	
+	private String name;
+	private String code;
+	
+	public TermOption(String name, String code){
+		this.name = name;
+		this.code = code;
+	}
+	
+	public String getName(){ return this.name; }
+	public String getCode(){ return this.code; }
+	
+}

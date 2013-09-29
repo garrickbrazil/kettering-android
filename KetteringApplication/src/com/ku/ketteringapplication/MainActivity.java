@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 	private List<String> last_view;
 	private Student student;
 	private Events events;
-	private KUMenu ku_menu;
+	//private KUMenu ku_menu;
 	private Directory dir;
 	private News news;
 	private Library lib;
@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
 	
 	
 	// Constants
-	private final String bg_color = "#7F95FA", HOME = "HOME", MENU = "MENU", 
+	private final String bg_color = "#7F95FA", HOME = "HOME", 
 			EVENTS = "EVENTS", NEWS = "NEWS", DIRECTORY = "DIRECTORY", 
 			LIBRARY = "LIBRARY", GRADES = "GRADES";
 	
@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
 		this.trans_dir = new TransferDirectory();
         this.last_view = new ArrayList<String>();
 		this.student = new Student();
-        this.ku_menu = new KUMenu();
+        //this.ku_menu = new KUMenu();
         this.events = new Events();
         this.dir = new Directory();
         this.lib = new Library();
@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
         // Setup icons for the grid
         Icon events = new Icon("Events", drawable.events, events_listener);
         Icon news = new Icon("News", drawable.news, news_listener);
-        Icon menu = new Icon("Menu", drawable.menu, menu_listener);
+        //Icon menu = new Icon("Menu", drawable.menu, menu_listener);
         Icon scheduler = new Icon("Scheduler", drawable.coursescheduler, scheduler_listener);
         Icon map = new Icon("Map", drawable.maps, maps_listener);
         Icon directory = new Icon("Directory", drawable.directory, directory_listener);
@@ -107,8 +107,8 @@ public class MainActivity extends Activity {
         Icon schedule = new Icon("Schedule", drawable.schedule, schedule_listener);
         
         // Global used when not logged in, all used when logged in
-        Icon[] icons_all = {events, news, menu, scheduler, map, directory, library, transfer, account, grades, schedule};
-        Icon[] icons_glob = {events, news, menu, scheduler, map, directory, library, transfer};
+        Icon[] icons_all = {events, news, scheduler, map, directory, library, transfer, account, grades, schedule};
+        Icon[] icons_glob = {events, news, scheduler, map, directory, library, transfer};
         
         this.icons_glob = icons_glob;
         this.icons_all = icons_all;
@@ -122,16 +122,14 @@ public class MainActivity extends Activity {
         
         ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.icons_glob, this.height, this.width));
         
-        /*
-        EditText login = (EditText) findViewById(R.id.signinField);
-        EditText pass = (EditText) findViewById(R.id.passwordField);
         
-        login.setText("");
-        pass.setText("");
+       // EditText login = (EditText) findViewById(R.id.signinField);
+        //EditText pass = (EditText) findViewById(R.id.passwordField);
+        
+        //login.setText("");
+        //pass.setText("");
         
         new Login().execute(this.student);
-        
-        */
         
         
     }
@@ -160,8 +158,8 @@ public class MainActivity extends Activity {
     		String last = last_view.get(0);
     	
     		// Move to latest state 
-	    	if(last.equals(MENU)) new KUMenuTask().execute(ku_menu);
-	    	else if (last.equals(EVENTS)) new EventsTask().execute(events);
+	    	//if(last.equals(MENU)) new KUMenuTask().execute(ku_menu); 
+	    	if (last.equals(EVENTS)) new EventsTask().execute(events);
 	    	else if (last.equals(NEWS)) new NewsTask().execute(news);
 	    	else if (last.equals(DIRECTORY)){ setContentView(R.layout.directory); populateSearch(); }
 	    	else if (last.equals(LIBRARY)){ setContentView(R.layout.library); populateLibrary(); }
@@ -175,14 +173,15 @@ public class MainActivity extends Activity {
     
     
     // Menu click
+    /*
     private OnClickListener menu_listener = new OnClickListener() { 
     	public void onClick(View v) { 
     		
     		last_view.add(0, HOME); 
-    		new KUMenuTask().execute(ku_menu); 
+    		//new KUMenuTask().execute(ku_menu); 
     	} 
     };
-    
+    */
     
     // Events click
     private OnClickListener events_listener = new OnClickListener() {
@@ -259,7 +258,13 @@ public class MainActivity extends Activity {
     
     
     // Account click
-    private OnClickListener account_listener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };
+    private OnClickListener account_listener = new OnClickListener() { 
+    	public void onClick(View v) { 
+    
+    		last_view.add(0, HOME);
+    		new AccountTask().execute(student);
+    	} 
+    };
     
     
     // Grades click
@@ -377,6 +382,13 @@ public class MainActivity extends Activity {
     
     
     /********************************************************************
+     * Method: displayFinalMidtermGrades
+     * Purpose: searches a transfer
+    /*******************************************************************/
+    public void displayFinalMidtermGrades(View view){ new FinalMidtermRetrival().execute(this.student); }
+    
+    
+    /********************************************************************
      * Method: changeGradeType
      * Purpose: changes type of grades being shown
     /*******************************************************************/
@@ -388,8 +400,9 @@ public class MainActivity extends Activity {
     	else if(gradeButton.getText().equals("Final")) this.student.setGradesPage(1);
     	else if(gradeButton.getText().equals("Midterm")) this.student.setGradesPage(2);
     	
-    	populateGrades();
+    	new GradesTask().execute(student);
     }
+    
     
     /********************************************************************
      * Method: populateGrades
@@ -407,11 +420,12 @@ public class MainActivity extends Activity {
     	finalButton.setBackgroundResource(R.layout.food_menu_button);
     	midtermButton.setBackgroundResource(R.layout.food_menu_button);
     	
-    	gradesContainer.removeAllViews();
     	
     	// Current grades
     	if(this.student.getGradesPage() == 0){
-    	
+    		
+    		gradesContainer.removeAllViews();
+    		
     		currentButton.setBackgroundResource(R.layout.food_menu_button_selected);
     		List<CurrentGrade> currentGrades = this.student.getCurrentGrades();
     		
@@ -448,15 +462,141 @@ public class MainActivity extends Activity {
     	}
     	
     	// Final grades
-    	else if(this.student.getGradesPage() == 1){
+    	else if(this.student.getGradesPage() == 1 && this.student.getFinalSelectedTerm() == -1){
+    		
+    		// Adjust selected item
     		finalButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    		
+    		ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, student.getFinalListString());
+    		Spinner selectList = (Spinner) findViewById(R.id.acceptedTerms);
+        	selectList.setAdapter(spinnerAdapter);
+        	
+        	selectList.setSelection(student.getFinalSelectedTerm(), true);
+        	
+    		
+    		new FinalMidtermRetrival().execute(this.student);
+    	}
+    	
+    	else if(this.student.getGradesPage() == 1 && this.student.getFinalSelectedTerm() != -1){
+    		
+    		// Adjust selected item
+    		finalButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    		
+    		ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, student.getFinalListString());
+    		Spinner selectList = (Spinner) findViewById(R.id.acceptedTerms);
+        	selectList.setAdapter(spinnerAdapter);
+        	
+        	selectList.setSelection(student.getFinalSelectedTerm(), true);
+        	
+        	for(FinalGrade currentGrade : student.getFinalGrades()){
+        		
+        		if(student.getFinalGrades().size() > 1 && currentGrade.getTitle().contains("Educat")){}
+        		
+        		else {
+        			
+        			TableLayout currentView = (TableLayout) inflater.inflate(R.layout.finalmidtermgrade, null);
+            		
+        			TextView title = (TextView) currentView.findViewById(R.id.title);
+        			TextView grade = (TextView) currentView.findViewById(R.id.grade);
+        			TextView credits = (TextView) currentView.findViewById(R.id.credits);
+        			
+        			title.setText(currentGrade.getTitle());
+        			grade.setText(currentGrade.getGrade());
+        			credits.setText(currentGrade.getEarnedCredits() + "");
+        			
+        			gradesContainer.addView(currentView);
+        		}
+        		
+        	}
+    		
     	}
     	
     	// Midterm grades
-    	else{
+    	else if(this.student.getGradesPage() == 2 && this.student.getMidtermSelectedTerm() == -1){
+    		
     		midtermButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    		
+    		ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, student.getMidtermListString());
+    		Spinner selectList = (Spinner) findViewById(R.id.acceptedTerms);
+        	selectList.setAdapter(spinnerAdapter);
+        	
+        	selectList.setSelection(student.getMidtermSelectedTerm(), true);
+        
+    		
+    		new FinalMidtermRetrival().execute(this.student);
     	}
     	
+    	else if(this.student.getGradesPage() == 2 && this.student.getMidtermSelectedTerm() != -1){
+    		
+    		midtermButton.setBackgroundResource(R.layout.food_menu_button_selected);
+    		
+    		ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, student.getMidtermListString());
+    		Spinner selectList = (Spinner) findViewById(R.id.acceptedTerms);
+        	selectList.setAdapter(spinnerAdapter);
+        	
+        	selectList.setSelection(student.getMidtermSelectedTerm(), true);
+        
+        	for(MidtermGrade currentGrade : student.getMidtermGrades()){
+        		
+        		if(student.getFinalGrades().size() > 1 && currentGrade.getTitle().contains("Educat")){}
+        		
+        		else {
+        			
+        			TableLayout currentView = (TableLayout) inflater.inflate(R.layout.finalmidtermgrade, null);
+            		
+        			TextView title = (TextView) currentView.findViewById(R.id.title);
+        			TextView grade = (TextView) currentView.findViewById(R.id.grade);
+        			TextView credits = (TextView) currentView.findViewById(R.id.credits);
+        			
+        			title.setText(currentGrade.getTitle());
+        			grade.setText(currentGrade.getGrade());
+        			credits.setText(currentGrade.getAttemptedCredits() + "");
+        			
+        			gradesContainer.addView(currentView);
+        		}
+        		
+        	}
+    	
+    	}
+    	
+    }
+    
+    /********************************************************************
+     * Method: populateAccount
+     * Purpose: populates account information
+    /*******************************************************************/
+    public void populateAccount(){
+    	
+    	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+    	LinearLayout accountContainer = (LinearLayout) findViewById(R.id.accountContainer);
+    	
+		TextView balanceTot = (TextView) accountContainer.findViewById(R.id.balance);
+		TextView charges = (TextView) accountContainer.findViewById(R.id.charges);
+		TextView payments = (TextView) accountContainer.findViewById(R.id.payments);
+		
+		balanceTot.setText(this.student.getAccountTotal().getBalance());
+		charges.setText(this.student.getAccountTotal().getCharges());
+		payments.setText(this.student.getAccountTotal().getCredits());
+		
+		
+		for(AccountDetail currentDetail : this.student.getAccountTotal().getDetails()){
+			
+			TableLayout currentView = (TableLayout) inflater.inflate(R.layout.account_detail, null);
+			
+			TextView balance = (TextView) currentView.findViewById(R.id.balance);
+			TextView charge = (TextView) currentView.findViewById(R.id.charge);
+			TextView payment = (TextView) currentView.findViewById(R.id.payment);
+			TextView description = (TextView) currentView.findViewById(R.id.description);
+			
+			balance.setText(currentDetail.getBalance());
+			charge.setText(currentDetail.getCharge());
+			payment.setText(currentDetail.getPayment());
+			description.setText(currentDetail.getDescription());
+			
+			accountContainer.addView(currentView);
+			
+		}
+		
     }
     
     /********************************************************************
@@ -966,7 +1106,7 @@ public class MainActivity extends Activity {
      * Purpose: populates menu with a single day of the week
     /*******************************************************************/
     public void populateMenu(int dayOfWeek){
-    	
+    	/*
     	// Buttons
     	((Button) findViewById(R.id.sun)).setBackgroundResource((dayOfWeek == 0)? R.layout.food_menu_button_selected:R.layout.food_menu_button);
     	((Button) findViewById(R.id.mon)).setBackgroundResource((dayOfWeek == 1)? R.layout.food_menu_button_selected:R.layout.food_menu_button);
@@ -994,6 +1134,7 @@ public class MainActivity extends Activity {
         ((TextView) findViewById(R.id.expoDinner)).setText(day.getDinner().getExpo());
         ((TextView) findViewById(R.id.dessertLunch)).setText(day.getLunch().getDessert());
         ((TextView) findViewById(R.id.dessertDinner)).setText(day.getDinner().getDessert());
+        */
     }
     
     
@@ -1141,7 +1282,6 @@ public class MainActivity extends Activity {
         @Override
         protected void onProgressUpdate(Void... values) { }
     }
-    
 
     /********************************************************************
      * Task: TransferSearchTask
@@ -1171,6 +1311,46 @@ public class MainActivity extends Activity {
         		// Show
         		setContentView(R.layout.transfer);
         		populateTransfer();
+        	}
+        	
+        	if(load_dialog.isShowing()) load_dialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { load_dialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+
+    
+    /********************************************************************
+     * Task: FinalMidtermRetrival
+     * Purpose: gets college list and shows page
+    /*******************************************************************/
+    private class FinalMidtermRetrival extends AsyncTask<Student, Void, Boolean> {
+    	
+    	@Override
+        protected Boolean doInBackground(Student... student) {  
+    		
+    		// Elements
+    		Spinner termList = (Spinner) findViewById(R.id.acceptedTerms);
+    		
+    		// Type
+    		if(student[0].getGradesPage() == 1) return student[0].storeFinalGrades(student[0].getFinalCodeByName(String.valueOf(termList.getSelectedItem())), termList.getSelectedItemPosition());
+    		else return student[0].storeMidtermGrades(student[0].getMidtermCodeByName(String.valueOf(termList.getSelectedItem())), termList.getSelectedItemPosition());
+    		
+        }      
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+        	
+        	if(success) {
+
+        		// Show
+        		setContentView(R.layout.grades);
+        		populateGrades();
         	}
         	
         	if(load_dialog.isShowing()) load_dialog.dismiss();
@@ -1700,7 +1880,7 @@ public class MainActivity extends Activity {
     
     /********************************************************************
      * Task: GradesTask
-     * Purpose: task to store grades
+     * Purpose: task to store grades (current, midterm, final)
     /*******************************************************************/
     private class GradesTask extends AsyncTask<Student, Void, Boolean> {
     	
@@ -1714,13 +1894,14 @@ public class MainActivity extends Activity {
     		}
     		
     		else if(student[0].getGradesPage() == 1){
-    			/* TODO */
-    			return false;
+
+    			if(student[0].getFinalListLoaded()) return true; 
+    			else return student[0].storeFinalTermList();
     		}
     		
     		else {
-    			/* TODO */
-    			return false;
+    			if(student[0].getMidtermListLoaded()) return true;
+    			else return student[0].storeMidtermList();
     		}
         }      
 
@@ -1743,12 +1924,48 @@ public class MainActivity extends Activity {
         protected void onProgressUpdate(Void... values) { }
         
     }
+
+    
+    /********************************************************************
+     * Task: AccountTask
+     * Purpose: task to get current account information
+    /*******************************************************************/
+    private class AccountTask extends AsyncTask<Student, Void, Boolean> {
+    	
+    	@Override
+        protected Boolean doInBackground(Student... student) {  
+
+    		if(student[0].getAccountLoaded()) return true;
+			else return student[0].storeAccount();
+    	}      
+
+        protected void onPostExecute(Boolean success) {
+        	
+    		if(success){       
+
+    			// Show
+    			setContentView(R.layout.account);
+	            populateAccount();
+    		}
+    		
+            if(load_dialog.isShowing()) load_dialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { load_dialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+
     
     
     /********************************************************************
      * Task: KUMenuTask
      * Purpose: task to store menu
     /*******************************************************************/
+    /*
     private class KUMenuTask extends AsyncTask<KUMenu, Void, Boolean> {
     	
     	@Override
@@ -1780,4 +1997,5 @@ public class MainActivity extends Activity {
         protected void onProgressUpdate(Void... values) { }
         
     }
+    */
 }

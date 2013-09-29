@@ -44,7 +44,7 @@ public class ImageAdapter extends BaseAdapter {
 
         ImageView image = (ImageView) view.findViewById(R.id.image);
         TextView text = (TextView) view.findViewById(R.id.title);
-        
+     
         text.setText(icons[position].getTitle());
         image.setImageResource(this.icons[position].getImage());
         view.setOnClickListener(this.icons[position].getListener());

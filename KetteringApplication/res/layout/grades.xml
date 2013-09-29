@@ -35,111 +35,139 @@
     </LinearLayout>
     
     <LinearLayout 
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="88"
-    android:weightSum="100"
-    android:orientation="vertical" >
-    
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="88"
+	    android:weightSum="100"
+	    android:orientation="vertical" >
     
 	    <LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:gravity="center"
-	    android:layout_weight="90"
-	    android:orientation="vertical" >
-	    
-	    
-	    <ScrollView 
-		  	android:layout_width="fill_parent"
-		   	android:layout_gravity="center_vertical"
-		   	android:layout_height="wrap_content"
-		   	android:gravity="center" >
-		   	
-	        <LinearLayout
-				android:id="@+id/gradesContainer"
-				android:layout_marginTop="5dp"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="vertical" >
-   	
-            
-   			</LinearLayout>
-	   	
-	   		
-	    </ScrollView>
-	</LinearLayout>
-	<View 
-	    android:layout_height="1dp"
-		android:layout_marginTop="5dp"
-    	android:layout_width="match_parent"
-    	android:background="@color/separator" >
-	</View>
-    <LinearLayout 
-	    android:id="@+id/menuGridContainer"
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="10"
-	    android:weightSum="3"
-	    android:gravity="bottom"
-	    android:orientation="horizontal" >
-		
-		<Button 
-	        android:text="Current"
-	        android:id="@+id/currentButton"
-	        android:layout_weight="1"
-	        android:background="@layout/food_menu_button"
-	        android:clickable="true"
-	        android:onClick="changeGradeType"
-	        android:textColor="#000000"
-	        android:gravity="center"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:layout_gravity="center"
-	        android:textSize="12dp"
-	        android:textStyle="bold" />
-		
+		    android:layout_width="match_parent"
+		    android:layout_height="0dp"
+		    android:gravity="center_horizontal"
+		    android:layout_weight="90"
+		    android:orientation="vertical" >
+	    	
+		    <ScrollView 
+			  	android:layout_width="fill_parent"
+			   	android:layout_gravity="center_vertical"
+			   	android:layout_height="wrap_content"
+			   	android:gravity="center" >
+			   	
+		        <LinearLayout
+					android:id="@+id/gradesContainer"
+					android:layout_marginTop="5dp"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
+					<LinearLayout
+						android:id="@+id/hiddenContainer"
+						android:layout_width="match_parent"
+						android:visibility="visible"
+						android:layout_height="match_parent"
+						android:orientation="vertical" >	
+			            <LinearLayout 
+						    android:layout_width="match_parent"
+						    android:layout_height="0dp"
+						    android:layout_weight="10"
+						    android:weightSum="100"
+						    android:gravity="center_vertical"
+						    android:orientation="horizontal"
+					    	android:layout_marginTop="5dp" >
+							
+						    <Spinner
+						        android:id="@+id/acceptedTerms"
+						        android:layout_width="0dp"
+						        android:textSize="13dp"
+						        android:layout_weight="94"
+						        android:layout_height="wrap_content" />
+					      	
+					    	<ImageView
+						       android:id="@+id/searchButton"
+						       android:layout_width="30dp"
+						       android:layout_weight="6" 
+						       android:layout_height="30dp"
+						       android:layout_marginRight="10dp"
+						       android:clickable="true"
+						       android:onClick="displayFinalMidtermGrades"
+						       android:src="@drawable/search_button" >
+						   </ImageView>
+					 	</LinearLayout>
+		 			</LinearLayout>	
+		            </LinearLayout>
+		    </ScrollView>
+		</LinearLayout>
 		<View 
-		    android:layout_height="fill_parent"
-    		android:layout_width="2dp"
-    		android:background="@color/separator" >
+		    android:layout_height="1dp"
+			android:layout_marginTop="5dp"
+	    	android:layout_width="match_parent"
+	    	android:background="@color/separator" >
 		</View>
-		
-		<Button 
-	        android:text="Final"
-	        android:id="@+id/finalButton"
-	        android:layout_weight="1"
-	        android:clickable="true"
-	        android:onClick="changeGradeType"
-	        android:background="@layout/food_menu_button"
-	        android:textColor="#000000"
-	        android:gravity="center"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:layout_gravity="center"
-	        android:textSize="12dp"
-	        android:textStyle="bold" />
-		<View 
-		    android:layout_height="fill_parent"
-    		android:layout_width="2dp"
-    		android:background="@color/separator" >
-		</View>
-		
-		<Button 
-	        android:text="Midterm"
-	        android:id="@+id/midtermButton"
-	        android:clickable="true"
-	        android:onClick="changeGradeType"
-	        android:layout_weight="1"
-	        android:background="@layout/food_menu_button"
-	        android:textColor="#000000"
-	        android:gravity="center"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:layout_gravity="center"
-	        android:textSize="12dp"
-	        android:textStyle="bold" />
-    	
- 	</LinearLayout>
+	    <LinearLayout 
+		    android:id="@+id/menuGridContainer"
+		    android:layout_width="match_parent"
+		    android:layout_height="0dp"
+		    android:layout_weight="10"
+		    android:weightSum="3"
+		    android:gravity="bottom"
+		    android:orientation="horizontal" >
+			
+			<Button 
+		        android:text="Current"
+		        android:id="@+id/currentButton"
+		        android:layout_weight="1"
+		        android:background="@layout/food_menu_button"
+		        android:clickable="true"
+		        android:onClick="changeGradeType"
+		        android:textColor="#000000"
+		        android:gravity="center"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:layout_gravity="center"
+		        android:textSize="12dp"
+		        android:textStyle="bold" />
+			
+			<View 
+			    android:layout_height="fill_parent"
+	    		android:layout_width="2dp"
+	    		android:background="@color/separator" >
+			</View>
+			
+			<Button 
+		        android:text="Final"
+		        android:id="@+id/finalButton"
+		        android:layout_weight="1"
+		        android:clickable="true"
+		        android:onClick="changeGradeType"
+		        android:background="@layout/food_menu_button"
+		        android:textColor="#000000"
+		        android:gravity="center"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:layout_gravity="center"
+		        android:textSize="12dp"
+		        android:textStyle="bold" />
+			<View 
+			    android:layout_height="fill_parent"
+	    		android:layout_width="2dp"
+	    		android:background="@color/separator" >
+			</View>
+			
+			<Button 
+		        android:text="Midterm"
+		        android:id="@+id/midtermButton"
+		        android:clickable="true"
+		        android:onClick="changeGradeType"
+		        android:layout_weight="1"
+		        android:background="@layout/food_menu_button"
+		        android:textColor="#000000"
+		        android:gravity="center"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:layout_gravity="center"
+		        android:textSize="12dp"
+		        android:textStyle="bold" />
+	    	
+	 	</LinearLayout>
  	</LinearLayout>
 </LinearLayout>
