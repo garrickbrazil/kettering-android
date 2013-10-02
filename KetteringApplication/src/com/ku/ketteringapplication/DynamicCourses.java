@@ -1,6 +1,6 @@
 package com.ku.ketteringapplication;
 
-import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +12,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.google.gson.Gson;
@@ -25,8 +27,15 @@ public class DynamicCourses {
 	// Properties
 	private Map<String, List<Course>> dynamicCourses;
 	private List<String> dynamicCoursesIDs;
+	private List<String> currentCourseList;
 	private List<List<Course>> workingSchedules;
-	
+	private List<String> dynamicCourseNames;
+	private List<String> termsName;
+	private List<String> termsValue;
+	private String currentTerm;
+	private boolean termsLoaded;
+	private boolean loaded;
+	private int termIndex; 
 	
 	/********************************************************************
 	 * Constructor: DynamicCourses
@@ -34,8 +43,17 @@ public class DynamicCourses {
 	/*******************************************************************/
 	public DynamicCourses(){
 	
+		this.termIndex = 0;
+		this.loaded = false;
+		this.termsLoaded = false;
+		this.currentTerm = "";
+		this.termsName = new ArrayList<String>();
+		this.currentCourseList = new ArrayList<String>();
+		this.termsValue = new ArrayList<String>();
 		this.dynamicCourses = new HashMap<String, List<Course>>();
 		this.dynamicCoursesIDs = new ArrayList<String>();
+		this.dynamicCourseNames = new ArrayList<String>();
+		this.dynamicCoursesIDs.add("<Classes>");
 	}
 	
 	
@@ -46,6 +64,72 @@ public class DynamicCourses {
 	public Map<String, List<Course>> getDynamicCourses(){ return this.dynamicCourses; }
 	public List<List<Course>> getWorkingSchedules(){ return this.workingSchedules; }
 	public List<String> getDynamicCourseIDs(){ return this.dynamicCoursesIDs; }
+	public List<String> getTermsName(){ return this.termsName; }
+	public List<String> getTermsValues(){ return this.termsValue; }
+	public boolean getTermsLoaded(){ return this.termsLoaded; }
+	public boolean getLoaded(){	return this.loaded; }
+	public String getCurrentTerm(){ return this.currentTerm; }
+	public List<String> getDynamicCourseNames(){ return this.dynamicCourseNames; }
+	public int getTermIndex(){ return this.termIndex; }
+	public List<String> getCurrentCourseList(){ return this.currentCourseList; }
+	
+	
+	/********************************************************************
+	 * Method: setTerm
+	 * Purpose: sets a new term for the scheduler
+	/*******************************************************************/
+	public void setTerm(int index){
+		
+		if (index < 0 || index >= this.termsName.size()){ this.termIndex = 0; return; }
+		
+		this.termIndex = index;
+		this.currentTerm = this.termsValue.get(index);
+		this.loaded = false;
+		this.dynamicCourses = new HashMap<String, List<Course>>();
+		this.dynamicCoursesIDs = new ArrayList<String>();
+		this.dynamicCourseNames = new ArrayList<String>();
+		this.dynamicCourseNames.add("<No term loaded>");
+	}
+
+	
+	/********************************************************************
+	 * Method: storeTerms
+	 * Purpose: store available terms to use
+	/*******************************************************************/
+	public boolean storeTerms(){
+		
+		try {
+			
+			DefaultHttpClient client = new DefaultHttpClient();
+			HttpGet dynamicGet = new HttpGet("https://jweb.kettering.edu/cku1/xhwschedule.P_SelectSubject");
+			HttpResponse response = client.execute(dynamicGet);
+			
+			String html = HTMLParser.parse(response);
+			
+			Document doc = Jsoup.parse(html);
+			Elements options = doc.getElementsByTag("option");
+			
+			for(Element option : options){
+				
+				if(!option.text().contains("None")){
+					
+					this.termsName.add(option.text());
+					this.termsValue.add(option.val());
+				}
+				else {
+					
+					this.termsName.add("<Term>");
+					this.termsValue.add("<Term>");
+				}
+			}
+			
+			
+			termsLoaded = true;
+			return true;
+		}
+		
+		catch(Exception e){ e.printStackTrace(); termsLoaded = false; return false; }
+	}
 	
 	
 	
@@ -53,15 +137,19 @@ public class DynamicCourses {
 	 * Method: storeDynamicCourses()
 	 * Purpose: store all dynamic courses to memory
 	/*******************************************************************/
-	public void storeDynamicCourses(int term){
+	public boolean storeDynamicCourses(){
 		
 		try {
 			
-			DefaultHttpClient client = new DefaultHttpClient();
+			if (this.currentTerm.equals("") || this.currentTerm.equals("<Term>")) return false;
+			
+			//DefaultHttpClient client = new DefaultHttpClient();
 			
 			// URLs
-			String begin = "https://jweb.kettering.edu/cku1/bwckschd.p_get_crse_unsec?term_in=" + term + "&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy&sel_subj=";
+			String begin = "https://jweb.kettering.edu/cku1/bwckschd.p_get_crse_unsec?term_in=" + currentTerm + "&sel_subj=dummy&sel_day=dummy&sel_schd=dummy&sel_insm=dummy&sel_camp=dummy&sel_levl=dummy&sel_sess=dummy&sel_instr=dummy&sel_ptrm=dummy&sel_attr=dummy";
 			String end = "&sel_crse=&sel_title=&sel_from_cred=&sel_to_cred=&sel_instr=%25&begin_hh=0&begin_mi=0&begin_ap=0&end_hh=0&end_mi=0&end_ap=a";
+			
+			String subjectList = "";
 			
 			// 32 Subjects
 			List<String> subjects = new ArrayList<String>();
@@ -69,27 +157,19 @@ public class DynamicCourses {
 			
 			
 			for(int i = 0; i < subjects.size(); i++){
-			
+				subjectList += "&sel_subj=" + subjects.get(i);
+			}
 				// Connect
-				HttpGet dynamicGet = new HttpGet(begin + subjects.get(i) + end);
-				HttpResponse response = client.execute(dynamicGet);
-				
-				String html = HTMLParser.parse(response);
-				
-				// Write to file
-				PrintWriter printer = new PrintWriter("artifacts/Subjects/" + subjects.get(i) + ".html");
-				printer.print(html);	    	
-				printer.close();
-				
-				System.out.println("Successfully stored \"" + subjects.get(i) + ".html\"");
-				
-				
-				Elements mainContainer = Jsoup.parse(html).getElementsByClass("datadisplaytable");
-				
+				//HttpGet dynamicGet = new HttpGet(begin + subjectList + end);
+				//HttpResponse response = client.execute(dynamicGet);
+				//String html = HTMLParser.parse(response);
+					
+				//Elements mainContainer = Jsoup.parse(html).getElementsByClass("datadisplaytable");
+				URL url = new URL(begin + subjectList + end);
+				Elements mainContainer = Jsoup.parse(url, 0).getElementsByClass("datadisplaytable");
 				// Valid container ?
 				if(mainContainer.size() > 0 && mainContainer.get(0).getElementsByTag("tbody").size() > 0){
-				
-					
+						
 					Elements coursesOffered = mainContainer.get(0).getElementsByTag("tbody").get(0).children();
 					
 					// Regular expression to get credits (no HTML consistency)
@@ -100,13 +180,11 @@ public class DynamicCourses {
 						// New course
 						Course currentCourse = new Course();
 						String[] courseTitle = coursesOffered.get(j*2).text().split("\\s[-]\\s");
-						
-						
+								
 						// Properties
 						String courseName, courseID, section, instructor, location, dateRange, time, days;
 						double credits; int crn;
 						
-
 						if ((courseTitle.length == 4 || courseTitle.length == 5) && coursesOffered.get(j*2+1).getElementsByTag("td").size() >= 8 && coursesOffered.get(j*2+1).getElementsByTag("td").get(0).text().split("\\d.\\d\\d\\d\\sCredits").length >= 2){
 							
 							
@@ -191,10 +269,14 @@ public class DynamicCourses {
 						}
 					}	
 				}	
-			}
+			
+			
+			loaded = true;
+			this.dynamicCoursesIDs.remove(0);
+			return true;
 		}
 		
-		catch(Exception e){ e.printStackTrace(); }
+		catch(Exception e){ e.printStackTrace(); loaded = false; return false; }
 	}
 	
 	
@@ -231,17 +313,17 @@ public class DynamicCourses {
 	
 	
 	/********************************************************************
-	 * Method: setClassOptions
+	 * Method: generatePermutations
 	 * Purpose: sets class options with given class ID's
 	/*******************************************************************/
-	public void setClassOptions(List<String> givenIDs){
+	public void generatePermutations(){
 		
 		
 		List<List<Course>> choices = new ArrayList<List<Course>>();
 		List<List<Course>> results = new ArrayList<List<Course>>();
 		
 		// Get givenIDs
-		for(String givenID : givenIDs){
+		for(String givenID : this.currentCourseList){
 			
 			// Try to add course
 			try{ choices.add(this.dynamicCourses.get(givenID)); }
@@ -265,6 +347,7 @@ public class DynamicCourses {
 	 * Purpose: tests if classes work together
 	/*******************************************************************/
 	public boolean testClasses(List<Course> courses){
+		
 		
 		// Days of the week
 		List<TimeBlock> Monday = new ArrayList<TimeBlock>();

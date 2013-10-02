@@ -1,0 +1,329 @@
+
+   
+   
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   		xmlns:tools="http://schemas.android.com/tools"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" 
+	     android:textColor="@color/scheduleHeader"
+    	android:orientation="vertical" >
+
+		<LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_marginRight="8dp"
+			    android:layout_marginBottom="4dp"
+			    android:orientation="vertical" >
+	   	
+            
+            <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:weightSum="120"
+			    android:orientation="horizontal" >
+	   	
+                <LinearLayout 
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="10"
+		    android:orientation="vertical" >
+	            <TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="16dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+	    	</LinearLayout>
+                
+                <LinearLayout 
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            <TextView
+					android:text="Monday"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textColor="@color/scheduleHeader"
+					android:gravity="center"
+					android:textSize="16dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            <TextView
+					android:text="Tuesday"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="16dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            <TextView
+					android:text="Wednesday"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textColor="@color/scheduleHeader"
+					android:gravity="center"
+					android:textSize="16dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            <TextView
+					android:text="Thursday"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="16dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            <TextView
+					android:text="Friday"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="16dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+	    	</LinearLayout>
+            </LinearLayout>
+        
+        <ScrollView 
+		  	android:layout_width="fill_parent"
+		   	android:layout_gravity="center_vertical"
+		   	android:layout_height="wrap_content"
+		   	android:gravity="center_vertical" >
+		   	
+
+		    <LinearLayout 
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:weightSum="120"
+			    android:orientation="horizontal" >
+	   	
+        		<LinearLayout
+		    android:id="@+id/timesContainer"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="10"
+		    android:orientation="vertical" >
+			    <TextView
+					android:text="8am"
+					android:id="@+id/time8am"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+			     <TextView
+					android:text="9am"
+					android:id="@+id/time9am"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:textColor="@color/scheduleHeader"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+			     <TextView
+					android:text="10am"
+					android:id="@+id/time10am"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:textColor="@color/scheduleHeader"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+			     <TextView
+					android:text="11am"
+					android:id="@+id/time11am"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:textColor="@color/scheduleHeader"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+			     
+			     <TextView
+					android:text="12pm"
+					android:id="@+id/time12pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textColor="@color/scheduleHeader"
+					android:textStyle="bold|italic">
+			     </TextView>
+			     <TextView
+					android:text="1pm"
+					android:id="@+id/time1pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+			     <TextView
+					android:text="2pm"
+					android:id="@+id/time2pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+			     <TextView
+					android:text="3pm"
+					android:id="@+id/time3pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+			     <TextView
+					android:text="4pm"
+					android:id="@+id/time4pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:textColor="@color/scheduleHeader"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+			     <TextView
+					android:text="5pm"
+					android:id="@+id/time5pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+			     <TextView
+					android:text="6pm"
+					android:id="@+id/time6pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+			     <TextView
+					android:text="7pm"
+					android:id="@+id/time7pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textColor="@color/scheduleHeader"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView>
+			     <TextView
+					android:text="8pm"
+					android:id="@+id/time8pm"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textColor="@color/scheduleHeader"
+					android:textStyle="bold|italic">
+			     </TextView>
+			      <TextView
+					android:text="9pm"
+					android:id="@+id/time9pm"
+					android:layout_width="match_parent"
+					android:textColor="@color/scheduleHeader"
+					android:layout_height="match_parent"
+					android:gravity="top|center_horizontal"
+					android:textSize="14dp"
+					android:textStyle="bold|italic">
+			     </TextView> 
+	    	</LinearLayout>
+	    	<LinearLayout 
+		    android:id="@+id/mondayContainer"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:id="@+id/tuesdayContainer"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:id="@+id/wednesdayContainer"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:id="@+id/thursdayContainer"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            
+	    	</LinearLayout>
+	    	
+	    	<LinearLayout 
+		    android:id="@+id/fridayContainer"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="22"
+		    android:orientation="vertical" >
+	            
+	    	</LinearLayout>
+		  </LinearLayout>
+	  </ScrollView>
+	  </LinearLayout>
+</LinearLayout>

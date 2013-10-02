@@ -1,0 +1,55 @@
+   <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:shrinkColumns="*"
+    android:stretchColumns="*"
+    android:layout_marginLeft="20dp"
+   	android:layout_marginBottom="5dp"
+   	android:layout_marginRight="20dp" >
+    
+ 		
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent" >
+		<TextView
+  		    android:id="@+id/courseNumber"
+  		    android:textColor="#000000"
+            android:textSize="14dp"
+            android:gravity="left"
+            android:layout_span="12"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="10dp"
+    		android:layout_marginBottom="10dp" >
+        </TextView>
+  		
+		<TextView
+  		    android:id="@+id/className"
+  		    android:textColor="#000000"
+            android:textSize="14dp"
+            android:gravity="left"
+            android:layout_span="12"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="10dp"
+    		android:layout_marginBottom="10dp" >
+        </TextView>
+  		<ImageView
+	       android:id="@+id/removeClass"
+	       android:layout_width="0dp"
+	       android:layout_weight="6" 
+	       android:layout_height="match_parent"
+	       android:layout_marginRight="10dp"
+	       android:clickable="true"
+	       
+	       android:src="@drawable/minus" >
+	   </ImageView>
+    </TableRow>
+    <View 
+	    android:layout_height="1dp"
+	   	android:layout_width="match_parent"
+	   	android:background="@color/even" >
+	</View>
+</TableLayout>
+
+     

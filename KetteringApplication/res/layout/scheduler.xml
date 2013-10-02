@@ -25,11 +25,11 @@
     </ImageView>
     
     <TextView
-		android:id="@+id/date"
+		android:id="@+id/title"
 		android:layout_width="fill_parent"
 		android:layout_height="match_parent"
 		android:gravity="center"
-		android:text="Directory"
+		android:text="Scheduler"
 		android:textSize="22dp"
 		android:textStyle="bold|italic">
      </TextView>
@@ -39,74 +39,81 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="88"
-    android:weightSum="100"
     android:gravity="center_vertical"
     android:orientation="vertical" >
     
 	<LinearLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="18"
+	    android:layout_width="fill_parent"
+	    android:layout_height="40dp"
 	    android:weightSum="100"
 	    android:gravity="center_vertical"
 	    android:orientation="horizontal"
     	android:layout_marginTop="5dp" >
-	
-	    <EditText 
-	    	android:id="@+id/searchField" 
-	    	android:layout_weight="56"
-	    	android:layout_width="0dp" 
-	    	android:gravity="center_vertical"
-	    	android:layout_height="wrap_content"
-	    	android:textSize="14dp" 
-	    	android:inputType="textEmailAddress" 
-	    	android:hint="Search..."
-	    	android:textColorHint="#2B2B2B"
-	    	android:layout_marginLeft="10dp"
-		   	android:layout_marginRight="10dp" >
-		</EditText>
-      	
+
 	    <Spinner
-        android:id="@+id/type"
+        android:id="@+id/terms"
         android:layout_width="0dp"
         android:textSize="13dp"
-        android:layout_weight="38"
-        android:layout_height="wrap_content"
-        android:entries="@array/search_options"
-        android:prompt="@string/search_type_prompt" />
+        android:layout_weight="94"
+        android:layout_height="match_parent"/>
 	    
     	<ImageView
 	       android:id="@+id/searchButton"
-	       android:layout_width="30dp"
+	       android:layout_width="0dp"
 	       android:layout_weight="6" 
-	       android:layout_height="30dp"
+	       android:layout_height="match_parent"
 	       android:layout_marginRight="10dp"
 	       android:clickable="true"
-	       android:onClick="search"
-	       android:src="@drawable/search_button" >
+	       android:onClick="storeSchedulerTerm"
+	       android:src="@drawable/download" >
 	   </ImageView>
  	</LinearLayout>
-    
-    <LinearLayout 
+ 	<LinearLayout 
 	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_marginBottom="15dp"
-	    android:gravity="center_horizontal"
-	    android:layout_weight="84"
-	    android:orientation="vertical" >
+	    android:layout_height="40dp"
+	    android:weightSum="100"
+	    android:gravity="center_vertical"
+	    android:orientation="horizontal"
+    	android:layout_marginTop="5dp" >
+
+	    <Spinner
+        android:id="@+id/classes"
+        android:layout_width="0dp"
+        android:textSize="13dp"
+        android:layout_weight="94"
+        android:layout_height="match_parent" />
 	    
-        
+    	<ImageView
+	       android:id="@+id/addClasses"
+	       android:layout_width="0dp"
+	       android:layout_weight="6" 
+	       android:layout_height="match_parent"
+	       android:layout_marginRight="10dp"
+	       android:clickable="true"
+	       android:onClick="addSchedulerClass"
+	       android:src="@drawable/add" >
+	   </ImageView>
+ 	</LinearLayout>
+
+ 	<RelativeLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical" >
      
     <ScrollView 
 	  	android:layout_width="fill_parent"
+	  	android:layout_alignParentTop="true"
+	  	android:gravity="center"
 	   	android:layout_gravity="center_vertical"
 	   	android:layout_height="wrap_content"
-	   	android:gravity="center_vertical" >
+	   	android:layout_marginBottom="50dp" >
 	   	
         <LinearLayout
 			
-			android:id="@+id/dirContainer"
+			android:id="@+id/classContainer"
 			android:layout_marginTop="5dp"
+			android:layout_marginLeft="25dp"
+			android:layout_marginRight="25dp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical" >
@@ -114,6 +121,25 @@
             
    		</LinearLayout>
     </ScrollView>
-    </LinearLayout>
+
+     	<Button
+ 	    android:id="@+id/viewSchedulesButton"
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="34dp"
+ 	    android:layout_marginBottom="10dp"
+ 	    android:layout_marginLeft="10dp"
+ 	    android:layout_marginRight="10dp"
+ 	    android:background="@layout/custom_button"
+ 	    android:onClick="viewSchedulePermutations"
+ 	    android:gravity="center"
+ 	    android:layout_alignParentBottom="true"
+ 	    android:text="View Schedules"
+ 	    android:textColor="#FFFFFF"
+ 	    android:textSize="20dp"
+ 	    android:visibility="visible" />
+    
+    </RelativeLayout>
+
+
  	</LinearLayout>
 </LinearLayout>

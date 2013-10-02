@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Display;
@@ -25,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
@@ -53,6 +55,7 @@ public class MainActivity extends Activity {
 	private Directory dir;
 	private News news;
 	private Library lib;
+	private DynamicCourses scheduler;
 	private int width;
 	private int height;
 	private Context c;
@@ -65,7 +68,7 @@ public class MainActivity extends Activity {
 	// Constants
 	private final String bg_color = "#7F95FA", HOME = "HOME", 
 			EVENTS = "EVENTS", NEWS = "NEWS", DIRECTORY = "DIRECTORY", 
-			LIBRARY = "LIBRARY", GRADES = "GRADES";
+			LIBRARY = "LIBRARY", GRADES = "GRADES", SCHEDULER = "SCHEDULER";
 	
 	/********************************************************************
 	 * Method: onCreate
@@ -85,6 +88,7 @@ public class MainActivity extends Activity {
         this.dir = new Directory();
         this.lib = new Library();
         this.news = new News();
+        this.scheduler = new DynamicCourses();
         
         // Setup loading dialog
         this.load_dialog = new ProgressDialog(this);
@@ -123,13 +127,13 @@ public class MainActivity extends Activity {
         ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.icons_glob, this.height, this.width));
         
         
-       // EditText login = (EditText) findViewById(R.id.signinField);
+        //EditText login = (EditText) findViewById(R.id.signinField);
         //EditText pass = (EditText) findViewById(R.id.passwordField);
         
         //login.setText("");
         //pass.setText("");
         
-        new Login().execute(this.student);
+        //new Login().execute(this.student);
         
         
     }
@@ -164,6 +168,7 @@ public class MainActivity extends Activity {
 	    	else if (last.equals(DIRECTORY)){ setContentView(R.layout.directory); populateSearch(); }
 	    	else if (last.equals(LIBRARY)){ setContentView(R.layout.library); populateLibrary(); }
 	    	else if (last.equals(GRADES)){ setContentView(R.layout.grades); populateGrades(); }
+	    	else if (last.equals(SCHEDULER)){ setContentView(R.layout.scheduler); populateScheduler(); }
 	    	else homeScreen();
 	    	
 	    	// Remove 1st state
@@ -254,7 +259,12 @@ public class MainActivity extends Activity {
     };
     
     // Scheduler click
-    private OnClickListener scheduler_listener = new OnClickListener() { public void onClick(View v) { /*TODO*/ } };
+    private OnClickListener scheduler_listener = new OnClickListener() { 
+    	public void onClick(View v) { 
+    	
+    		new CourseSchedulerTask().execute(scheduler);
+    	} 
+    };
     
     
     // Account click
@@ -614,6 +624,69 @@ public class MainActivity extends Activity {
     	myIntent.putExtra("jsonCourses", jsonArray);
     	MainActivity.this.startActivity(myIntent);
     }
+    
+    /********************************************************************
+     * Method: populateScheduler
+     * Purpose: populates scheduler page
+    /*******************************************************************/
+    public void populateScheduler(){
+    
+    	
+    	// Elements
+    	ArrayAdapter<String> termsAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, this.scheduler.getTermsName());
+    	ArrayAdapter<String> classesAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, this.scheduler.getDynamicCourseIDs());
+    	Spinner termsList = (Spinner) findViewById(R.id.terms);
+    	Spinner classesList = (Spinner) findViewById(R.id.classes);
+    	LinearLayout container = (LinearLayout) findViewById(R.id.classContainer);
+    	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+    	Button view = (Button) findViewById(R.id.viewSchedulesButton);
+    	
+    	termsList.setAdapter(termsAdapter);
+    	classesList.setAdapter(classesAdapter);
+    	
+    	if(!scheduler.getLoaded()){
+    		classesList.setEnabled(false);
+    		((LinearLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(false);
+    		//view.setEnabled(true);
+    		view.setEnabled(false);
+    	}
+    	
+    	else{
+	    	
+    		termsList.setSelection(scheduler.getTermIndex());
+    		classesList.setEnabled(true);
+    		((LinearLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(true);
+    		
+    		view.setEnabled(true);
+    		view.setEnabled(this.scheduler.getCurrentCourseList().size() > 0);
+    		
+	    	for(int i = 0; i < this.scheduler.getCurrentCourseList().size(); i++){
+	    	
+	    		String current = scheduler.getCurrentCourseList().get(i);
+	    		
+	    		TableLayout classCont = (TableLayout) inflater.inflate(R.layout.scheduler_class, null);
+	    		TextView className = (TextView) classCont.findViewById(R.id.className);
+	    		TextView courseNumber = (TextView) classCont.findViewById(R.id.courseNumber);
+	    		className.setText(current);
+	    		
+	    		ImageView delete = (ImageView) classCont.findViewById(R.id.removeClass);
+	        	delete.setOnClickListener(new OnClickListener(){
+	        		public void onClick(View v){
+	        		    	
+	        			LinearLayout parent = (LinearLayout) v.getParent().getParent().getParent();
+	        		    String removeID = (String) ((TextView) ((TableRow) v.getParent()).findViewById(R.id.className)).getText();
+	        		    parent.removeView((TableLayout)v.getParent().getParent());
+	        		    scheduler.getCurrentCourseList().remove(removeID);	
+	        		}
+	        		
+	        	});
+	        	
+	        	courseNumber.setText("Course #" + (i + 1));
+	    		container.addView(classCont);
+	    	}
+    	}
+    }
+    
     
     
     /********************************************************************
@@ -1208,6 +1281,170 @@ public class MainActivity extends Activity {
     /*******************************************************************/
     public void search(View v){ new DirectoryTask().execute(dir); }
     
+
+    /********************************************************************
+     * Method: storeSchedulerTerm
+     * Purpose: stores a scheulders new term data
+    /*******************************************************************/
+    public void storeSchedulerTerm(View v){ new StoreScheduleTermTask().execute(scheduler); }
+    
+    /********************************************************************
+     * Method: storeSchedulerTerm
+     * Purpose: stores a scheulders new term data
+    /*******************************************************************/
+    public void viewSchedulePermutations(View v){ 
+    	
+    	// Calculate scheduler permutations
+    	scheduler.generatePermutations();
+    	
+    	// If no working schedules
+    	if(scheduler.getWorkingSchedules().size() <= 0) return;
+    	List<List<Course>> workingSchedules = scheduler.getWorkingSchedules();
+    	
+    	/*    	
+    	Course math = new Course();
+    	math.setCourseID("MATH-102");
+    	math.setCourseName("Calc 2");
+    	math.setCredits(4);
+    	math.setCRN(333333);
+    	math.setDays("MT");
+    	math.setInstructor("Stock");
+    	math.setLocation("AB-3320");
+    	math.setSection("01");
+    	math.setTime("4:00 pm - 5:00 pm");
+    	
+    	Course math2 = new Course();
+    	math2.setCourseID("MATH-102");
+    	math2.setCourseName("Calc 2");
+    	math2.setCredits(4);
+    	math2.setCRN(333333);
+    	math2.setDays("WF");
+    	math2.setInstructor("Stock");
+    	math2.setLocation("AB-3320");
+    	math2.setSection("02");
+    	math2.setTime("2:00 pm - 3:00 pm");
+    	  	
+    	Course cs = new Course();
+    	cs.setCourseID("CS-101");
+    	cs.setCourseName("Comp and Algo");
+    	cs.setCredits(4);
+    	cs.setCRN(444444);
+    	cs.setDays("MW");
+    	cs.setInstructor("Stanchev");
+    	cs.setLocation("AB-3500");
+    	cs.setSection("01");
+    	cs.setTime("11:00 am - 12:00 pm");
+    	
+    	List<List<Course>> workingSchedules = new ArrayList<List<Course>>();
+    	List<Course> set1 = new ArrayList<Course>();
+    	List<Course> set2 = new ArrayList<Course>();
+    	
+    	set1.add(math);
+    	set1.add(cs);
+    	set2.add(math2);
+    	set2.add(cs);
+    	
+    	workingSchedules.add(set1);
+    	workingSchedules.add(set2);
+    	*/
+    	
+    	// Create an index array and initialize used variables
+    	int [] courseIndexes = new int[workingSchedules.size()];
+    	int totalSize = 0;
+    	Gson gson = new Gson();
+    	
+    	// Store size array and calculate total size
+    	for(int i = 0; i < workingSchedules.size(); i++){
+    		
+    		List<Course> courseSet  = workingSchedules.get(i);
+    		totalSize += courseSet.size();
+    		courseIndexes[i] = courseSet.size();
+    	}
+    	
+    	// Create a string array for ALL courses
+    	String[] jsonArray = new String[totalSize];
+    	
+    	int globalIndex = 0;
+    	
+    	// Convert and store all courses as GSON information
+    	for(List<Course> currentSet : workingSchedules){
+    		
+    		for(Course course : currentSet){
+    			
+    			 jsonArray[globalIndex++] = gson.toJson(course);
+    		}
+    	}
+    	
+    	// Prepare activity
+    	Intent myIntent = new Intent(MainActivity.this, Scheduler.class);
+
+    	// Put string array and course indexes
+    	myIntent.putExtra("jsonCourses", jsonArray);
+    	myIntent.putExtra("courseIndexes", courseIndexes);
+    	
+    	MainActivity.this.startActivity(myIntent);
+    }
+    
+    
+    /********************************************************************
+     * Method: removeSchedulerClass
+     * Purpose: removes schedulerClass
+    /*******************************************************************/
+    public void removeSchedulerClass(View v){
+    	LinearLayout parent = (LinearLayout) v.getParent().getParent().getParent();
+    	String removeID = (String) ((TextView) ((TableRow) v.getParent()).findViewById(R.id.className)).getText();
+    	parent.removeView(v);
+    	scheduler.getCurrentCourseList().remove(removeID);
+    	
+    }
+    
+    
+    /********************************************************************
+     * Method: addSchedulerClass
+     * Purpose: adds a class to the scheduler screen and data
+    /*******************************************************************/
+    public void addSchedulerClass(View v){
+    	
+    	Spinner classSpin = (Spinner) findViewById(R.id.classes);
+    	LinearLayout container = (LinearLayout) findViewById(R.id.classContainer);
+    	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+    	Button view = (Button) findViewById(R.id.viewSchedulesButton);
+    	
+    	this.scheduler.getCurrentCourseList().add(scheduler.getDynamicCourseIDs().get(classSpin.getSelectedItemPosition()));
+    	
+    	TableLayout classCont = (TableLayout) inflater.inflate(R.layout.scheduler_class, null);
+    	TextView className = (TextView) classCont.findViewById(R.id.className);
+    	TextView courseNumber = (TextView) classCont.findViewById(R.id.courseNumber);
+    	className.setText(scheduler.getDynamicCourseIDs().get(classSpin.getSelectedItemPosition()));
+    	
+    	ImageView delete = (ImageView) classCont.findViewById(R.id.removeClass);
+    	delete.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    		    
+    			Button view = (Button) findViewById(R.id.viewSchedulesButton);
+    			view.setEnabled(scheduler.getCurrentCourseList().size() > 0);
+    			LinearLayout parent = (LinearLayout) v.getParent().getParent().getParent();
+    		    String removeID = (String) ((TextView) ((TableRow) v.getParent()).findViewById(R.id.className)).getText();
+    		    parent.removeView((TableLayout)v.getParent().getParent());
+    		    scheduler.getCurrentCourseList().remove(removeID);
+    		    
+    		    // Renumber courses
+    		    LinearLayout container = (LinearLayout) findViewById(R.id.classContainer);
+    		    for(int i = 0; i < container.getChildCount(); i++){
+    		    	TableLayout child = (TableLayout) container.getChildAt(i);
+    		    	
+    		    	((TextView)child.findViewById(R.id.courseNumber)).setText("Course #" + (i+1));
+    		    }
+    		    
+    		}
+    		
+    	});
+    	
+    	view.setEnabled(true);
+    	courseNumber.setText("Course #" + scheduler.getCurrentCourseList().size());
+    	container.addView(classCont);
+    }
+    
     
     /********************************************************************
      * Method: librarySearch
@@ -1307,7 +1544,8 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Boolean success) {
         	
         	if(success) {
-
+        		
+        		
         		// Show
         		setContentView(R.layout.transfer);
         		populateTransfer();
@@ -1764,7 +2002,83 @@ public class MainActivity extends Activity {
         protected void onProgressUpdate(Void... values) { }
     }
 
+
+    /********************************************************************
+     * Task: StoreScheduleTermTask
+     * Purpose: task to load terms 
+    /*******************************************************************/
+    private class StoreScheduleTermTask extends AsyncTask<DynamicCourses, Void, Boolean> {
+    	
+        protected Boolean doInBackground(DynamicCourses... scheduler) {  
+    		
+        	
+        	Spinner termSpin = (Spinner) findViewById(R.id.terms);
+        	
+    		// Load
+    		scheduler[0].setTerm(termSpin.getSelectedItemPosition());
+    		return scheduler[0].storeDynamicCourses();
+        }      
+
+        protected void onPostExecute(Boolean success) {
+        	
+    		if(success){
+	        
+        		// Show
+        		setContentView(R.layout.scheduler);
+    			
+    			// Show
+	            populateScheduler();
+    		}
+    		
+            if(load_dialog.isShowing()) load_dialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { load_dialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+
     
+    /********************************************************************
+     * Task: CourseSchedulerTask
+     * Purpose: task to load terms 
+    /*******************************************************************/
+    private class CourseSchedulerTask extends AsyncTask<DynamicCourses, Void, Boolean> {
+    	
+        protected Boolean doInBackground(DynamicCourses... scheduler) {  
+    		
+    		// Load
+    		if(scheduler[0].getTermsLoaded()) return true;
+    		else return scheduler[0].storeTerms();
+        }      
+
+        protected void onPostExecute(Boolean success) {
+        	
+    		if(success){
+    			last_view.add(HOME);
+    			
+        		// Show
+        		setContentView(R.layout.scheduler);
+    			
+    			// Show
+	            populateScheduler();
+    		}
+    		
+            if(load_dialog.isShowing()) load_dialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { load_dialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+
+        
     /********************************************************************
      * Task: ScheduleTask
      * Purpose: task to store schedule
