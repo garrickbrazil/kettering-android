@@ -2,6 +2,7 @@ package com.ku.ketteringapplication;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.client.methods.HttpGet;
@@ -14,20 +15,28 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Html;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -59,6 +68,9 @@ public class MainActivity extends Activity {
 	private int width;
 	private int height;
 	private Context c;
+	private ViewPager schedulerPager;
+	private Spinner schedulerIndexer;
+	private int orientation;
 	
 	// Functions
 	private Icon[] icons_all;
@@ -125,7 +137,7 @@ public class MainActivity extends Activity {
         this.height = display.getHeight();
         
         ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.icons_glob, this.height, this.width));
-        
+        this.orientation = getRequestedOrientation();
         
         //EditText login = (EditText) findViewById(R.id.signinField);
         //EditText pass = (EditText) findViewById(R.id.passwordField);
@@ -156,6 +168,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
     	
+    	setRequestedOrientation(this.orientation);
     	
     	if(this.last_view.size() > 0){
     		
@@ -647,8 +660,8 @@ public class MainActivity extends Activity {
     	if(!scheduler.getLoaded()){
     		classesList.setEnabled(false);
     		((LinearLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(false);
-    		//view.setEnabled(true);
-    		view.setEnabled(false);
+    		view.setEnabled(true);
+    		//view.setEnabled(false);
     	}
     	
     	else{
@@ -658,7 +671,7 @@ public class MainActivity extends Activity {
     		((LinearLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(true);
     		
     		view.setEnabled(true);
-    		view.setEnabled(this.scheduler.getCurrentCourseList().size() > 0);
+    		//view.setEnabled(this.scheduler.getCurrentCourseList().size() > 0);
     		
 	    	for(int i = 0; i < this.scheduler.getCurrentCourseList().size(); i++){
 	    	
@@ -1294,6 +1307,11 @@ public class MainActivity extends Activity {
     /*******************************************************************/
     public void viewSchedulePermutations(View v){ 
     	
+    	this.last_view.add(0, SCHEDULER);
+    	scheduler.generatePermutations();
+    	new ViewScheduleTask().execute(scheduler);
+    	
+    	/*
     	// Calculate scheduler permutations
     	scheduler.generatePermutations();
     	
@@ -1301,7 +1319,9 @@ public class MainActivity extends Activity {
     	if(scheduler.getWorkingSchedules().size() <= 0) return;
     	List<List<Course>> workingSchedules = scheduler.getWorkingSchedules();
     	
-    	/*    	
+    	*/
+    	
+    	/*
     	Course math = new Course();
     	math.setCourseID("MATH-102");
     	math.setCourseName("Calc 2");
@@ -1347,42 +1367,87 @@ public class MainActivity extends Activity {
     	workingSchedules.add(set1);
     	workingSchedules.add(set2);
     	*/
+		
+    	/*
+    	setContentView(R.layout.scheduler_view_main);	    
+    	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     	
-    	// Create an index array and initialize used variables
-    	int [] courseIndexes = new int[workingSchedules.size()];
-    	int totalSize = 0;
-    	Gson gson = new Gson();
     	
-    	// Store size array and calculate total size
-    	for(int i = 0; i < workingSchedules.size(); i++){
-    		
-    		List<Course> courseSet  = workingSchedules.get(i);
-    		totalSize += courseSet.size();
-    		courseIndexes[i] = courseSet.size();
-    	}
-    	
-    	// Create a string array for ALL courses
-    	String[] jsonArray = new String[totalSize];
-    	
-    	int globalIndex = 0;
-    	
-    	// Convert and store all courses as GSON information
-    	for(List<Course> currentSet : workingSchedules){
-    		
-    		for(Course course : currentSet){
-    			
-    			 jsonArray[globalIndex++] = gson.toJson(course);
-    		}
-    	}
-    	
-    	// Prepare activity
-    	Intent myIntent = new Intent(MainActivity.this, Scheduler.class);
+    	this.schedulerIndexer = (Spinner) findViewById(R.id.scheduleIndex);
+        
+        schedulerIndexer.setOnItemSelectedListener(new OnItemSelectedListener() {
+           	@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				
+           		schedulerPager.setCurrentItem(arg2);
+			}
 
-    	// Put string array and course indexes
-    	myIntent.putExtra("jsonCourses", jsonArray);
-    	myIntent.putExtra("courseIndexes", courseIndexes);
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+        });
+        
+        // Clear courses
+	    List<String> earliestTimes = new ArrayList<String>();
+	    List<String> latestTimes = new ArrayList<String>();
+	    
+	    int latestTime;
+	    int earliestTime;
+        
+        List<String> indexerList = new ArrayList<String>();
+        
+        
+        for(int i = 1; i <= workingSchedules.size(); i++){
+        	
+        	latestTime = 8;
+    		earliestTime = 8;
+            
+        	
+        	for(int j = 0; j < workingSchedules.get(i - 1).size(); j++){
+        		
+        		Course current = workingSchedules.get(i - 1).get(j);
+        		
+        		TimeBlock newBlock = TimeBlock.convertToTimeBlock(current);
+		    	
+		    	if(newBlock != null){
+		    	
+		    		// Check for latest time
+			    	@SuppressWarnings("deprecation")
+					int hoursEnd = newBlock.getEnd().getHours();
+			    	if (hoursEnd > latestTime) latestTime = hoursEnd;
+		    	}
+        		
+        	}
+        	
+        	latestTimes.add(latestTime + "");
+        	earliestTimes.add(earliestTime + "");
+        	indexerList.add(i + "/" + workingSchedules.size());
+        }
+        
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, indexerList);
+        schedulerIndexer.setAdapter(spinnerAdapter);
+        
+        SchedulerPagerAdapter adapter = new SchedulerPagerAdapter(workingSchedules, latestTimes, earliestTimes);
     	
-    	MainActivity.this.startActivity(myIntent);
+        schedulerPager = (ViewPager) findViewById(R.id.schedulerPager);
+        schedulerPager.setOnPageChangeListener(new OnPageChangeListener() {
+            public void onPageScrollStateChanged(int state) {
+            	
+            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            public void onPageSelected(int position) {
+            	schedulerIndexer.setSelection(position);
+            }
+        });
+        schedulerPager.setAdapter(adapter);
+        schedulerPager.setCurrentItem(0);
+        this.load_dialog.dismiss();
+        */
     }
     
     
@@ -2041,6 +2106,163 @@ public class MainActivity extends Activity {
         
     }
 
+    /********************************************************************
+     * Task: ViewScheduleTask
+     * Purpose: view schedule permutations 
+    /*******************************************************************/
+    private class ViewScheduleTask extends AsyncTask<DynamicCourses, Void, Boolean> {
+    	
+        protected Boolean doInBackground(DynamicCourses... scheduler) {  
+    		
+        	
+        	
+        	// If no working schedules
+        	return (scheduler[0].getWorkingSchedules().size() > 0);
+        }      
+
+        protected void onPostExecute(Boolean success) {
+        	
+    		if(success){
+	        
+    			setContentView(R.layout.scheduler_view_main);	    
+    	    	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    	    	
+    	    	/*
+    	    	Course math = new Course();
+    	    	math.setCourseID("MATH-102");
+    	    	math.setCourseName("Calc 2");
+    	    	math.setCredits(4);
+    	    	math.setCRN(333333);
+    	    	math.setDays("MT");
+    	    	math.setInstructor("Stock");
+    	    	math.setLocation("AB-3320");
+    	    	math.setSection("01");
+    	    	math.setTime("4:00 pm - 5:00 pm");
+    	    	
+    	    	Course math2 = new Course();
+    	    	math2.setCourseID("MATH-102");
+    	    	math2.setCourseName("Calc 2");
+    	    	math2.setCredits(4);
+    	    	math2.setCRN(333333);
+    	    	math2.setDays("WF");
+    	    	math2.setInstructor("Stock");
+    	    	math2.setLocation("AB-3320");
+    	    	math2.setSection("02");
+    	    	math2.setTime("2:00 pm - 3:00 pm");
+    	    	  	
+    	    	Course cs = new Course();
+    	    	cs.setCourseID("CS-101");
+    	    	cs.setCourseName("Comp and Algo");
+    	    	cs.setCredits(4);
+    	    	cs.setCRN(444444);
+    	    	cs.setDays("MW");
+    	    	cs.setInstructor("Stanchev");
+    	    	cs.setLocation("AB-3500");
+    	    	cs.setSection("01");
+    	    	cs.setTime("11:00 am - 12:00 pm");
+    	    	
+    	    	List<List<Course>> workingSchedules = new ArrayList<List<Course>>();
+    	    	
+    	    	List<Course> set1 = new ArrayList<Course>();
+    	    	List<Course> set2 = new ArrayList<Course>();
+    	    	
+    	    	set1.add(math);
+    	    	set1.add(cs);
+    	    	set2.add(math2);
+    	    	set2.add(cs);
+    	    	
+    	    	workingSchedules.add(set1);
+    	    	workingSchedules.add(set2);
+    	    	*/
+    	    	
+    	    	List<List<Course>> workingSchedules = scheduler.getWorkingSchedules();
+    	    	
+    	    	schedulerIndexer = (Spinner) findViewById(R.id.scheduleIndex);
+    	        
+    	        schedulerIndexer.setOnItemSelectedListener(new OnItemSelectedListener() {
+    	           	@Override
+    				public void onItemSelected(AdapterView<?> arg0, View arg1,
+    						int arg2, long arg3) {
+    					
+    	           		schedulerPager.setCurrentItem(arg2);
+    				}
+
+    				@Override
+    				public void onNothingSelected(AdapterView<?> arg0) {
+    					// TODO Auto-generated method stub
+    					
+    				}
+
+    	        });
+    	        
+    	        
+    	        // Clear courses
+    		    int[] earliestTimes = new int[workingSchedules.size()];
+    		    int[] latestTimes = new int[workingSchedules.size()];
+    		    
+    		    int latestTime;
+    		    int earliestTime;
+    	        
+    	        List<String> indexerList = new ArrayList<String>();
+    	        
+    	        for(int i = 1; i <= workingSchedules.size(); i++){
+    	        	
+    	        	latestTime = 8;
+    	    		earliestTime = 8;
+    	            
+    	        	
+    	        	for(int j = 0; j < workingSchedules.get(i - 1).size(); j++){
+    	        		
+    	        		Course current = workingSchedules.get(i - 1).get(j);
+    	        		
+    	        		TimeBlock newBlock = TimeBlock.convertToTimeBlock(current.getTime(), current);
+    			    	
+    			    	if(newBlock != null){
+    			    	
+    			    		// Check for latest time
+    						int hoursEnd = newBlock.getEndHours();
+    				    	if (hoursEnd > latestTime) latestTime = hoursEnd;
+    			    	}
+    	        		
+    	        	}
+    	        	
+    	        	latestTimes[i-1] = latestTime;
+    	        	earliestTimes[i-1] = earliestTime;
+    	        	indexerList.add(i + "/" + workingSchedules.size());
+    	        }
+    	        
+    	        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(c,android.R.layout.simple_spinner_item, indexerList);
+    	        schedulerIndexer.setAdapter(spinnerAdapter);
+    	        
+    	        SchedulerPagerAdapter adapter = new SchedulerPagerAdapter(workingSchedules, latestTimes, earliestTimes);
+    	    	
+    	        schedulerPager = (ViewPager) findViewById(R.id.schedulerPager);
+    	        schedulerPager.setOnPageChangeListener(new OnPageChangeListener() {
+    	            public void onPageScrollStateChanged(int state) {
+    	            	
+    	            }
+    	            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+    	            public void onPageSelected(int position) {
+    	            	schedulerIndexer.setSelection(position);
+    	            }
+    	        });
+    	        
+    	        schedulerPager.setAdapter(adapter);
+    	        schedulerPager.setCurrentItem(0);
+    		}
+    		
+            if(load_dialog.isShowing()) load_dialog.dismiss();
+		}
+
+        @Override
+        protected void onPreExecute() { load_dialog.show(); }
+
+        @Override
+        protected void onProgressUpdate(Void... values) { }
+        
+    }
+
     
     /********************************************************************
      * Task: CourseSchedulerTask
@@ -2312,4 +2534,245 @@ public class MainActivity extends Activity {
         
     }
     */
+}
+
+class SchedulerPagerAdapter extends PagerAdapter {
+	
+	// Properties
+	List<TimeBlock> monday;
+	List<TimeBlock> tuesday;
+	List<TimeBlock> wednesday;
+	List<TimeBlock> thursday;
+	List<TimeBlock> friday;
+	LayoutInflater inflater;
+	List<List<Course>> workingCourses;
+	int[] latestTimes;
+	int[] earliestTimes;
+	ViewPager schedluerPager;
+	//Scheduler c;
+	
+	// Constants
+	final int ROWSIZE = 5;
+	final String[] COLORS = {"#FFDEAD", "#87CEEB","#8FBC8F", 
+			"#F0E68C", "#FFC0CB", "#D8BFD8", "#BFEFFF", "#C1FFC1", "#BCEE68", "#FFEC8B"};
+	boolean creation = false;
+	/*
+	public void setContext (ViewPager schedulerPager, Scheduler scheduler){
+		this.schedluerPager = schedulerPager;
+		this.c = scheduler;
+	}
+	*/
+	public SchedulerPagerAdapter(List<List<Course>> workingCourses, int[] latestTimes, int[] earliestTimes){
+		
+		this.workingCourses = workingCourses;
+		this.latestTimes = latestTimes;
+		this.earliestTimes = earliestTimes;
+
+	}
+	
+    public int getCount() {
+        return this.workingCourses.size();
+    }
+
+    public Object instantiateItem(View collection, int position) {
+
+    	int latestTime = this.latestTimes[position];
+	    int earliestTime = this.earliestTimes[position]; 
+	    
+        int resId = R.layout.schedule_view;
+        
+        inflater = (LayoutInflater) collection.getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        
+        View view = inflater.inflate(resId, null);
+        
+        sortCoursesToDay(position);
+        
+        // Day Containers
+	    LinearLayout mondayView = (LinearLayout) view.findViewById(R.id.mondayContainer);
+	    LinearLayout tuesdayView = (LinearLayout) view.findViewById(R.id.tuesdayContainer);
+	    LinearLayout wednesdayView = (LinearLayout) view.findViewById(R.id.wednesdayContainer);
+	    LinearLayout thursdayView = (LinearLayout) view.findViewById(R.id.thursdayContainer);
+	    LinearLayout fridayView = (LinearLayout) view.findViewById(R.id.fridayContainer);
+	    
+	    // Time fields
+	    TextView time8am  = (TextView) view.findViewById(R.id.time8am);
+	    TextView time9am  = (TextView)  view.findViewById(R.id.time9am);
+	    TextView time10am = (TextView) view.findViewById(R.id.time10am);
+	    TextView time11am = (TextView) view.findViewById(R.id.time11am);
+	    TextView time12pm = (TextView) view.findViewById(R.id.time12pm);
+	    TextView time1pm  = (TextView) view.findViewById(R.id.time1pm);
+	    TextView time2pm  = (TextView) view.findViewById(R.id.time2pm);
+	    TextView time3pm  = (TextView) view.findViewById(R.id.time3pm);
+	    TextView time4pm  = (TextView) view.findViewById(R.id.time4pm);
+	    TextView time5pm  = (TextView) view.findViewById(R.id.time5pm);
+	    TextView time6pm  = (TextView) view.findViewById(R.id.time6pm);
+	    TextView time7pm  = (TextView) view.findViewById(R.id.time7pm);
+	    TextView time8pm  = (TextView) view.findViewById(R.id.time8pm);
+	    TextView time9pm  = (TextView) view.findViewById(R.id.time9pm);
+	    
+	    
+	    // Remove times greater than the latestTime
+	    if(latestTime >= 8 && earliestTime <= 8) time8am.setHeight(12 * ROWSIZE);
+	    else time8am.setVisibility(View.GONE);
+	    if(latestTime >= 9 && earliestTime <=  9) time9am.setHeight(12 * ROWSIZE);
+	    else time9am.setVisibility(View.GONE);
+	    if(latestTime >= 10 && earliestTime <=  10) time10am.setHeight(12 * ROWSIZE);
+	    else time10am.setVisibility(View.GONE);
+	    if(latestTime >= 11 && earliestTime <=  11) time11am.setHeight(12 * ROWSIZE);
+	    else time11am.setVisibility(View.GONE);
+	    if(latestTime >= 12 && earliestTime <=  12) time12pm.setHeight(12 * ROWSIZE);
+	    else time12pm.setVisibility(View.GONE);
+	    if(latestTime >= 13 && earliestTime <=  13) time1pm.setHeight(12 * ROWSIZE);
+	    else time1pm.setVisibility(View.GONE);
+	    if(latestTime >= 14 && earliestTime <=  14) time2pm.setHeight(12 * ROWSIZE);
+	    else time2pm.setVisibility(View.GONE);
+	    if(latestTime >= 15 && earliestTime <=  15) time3pm.setHeight(12 * ROWSIZE);
+	    else time3pm.setVisibility(View.GONE);
+	    if(latestTime >= 16 && earliestTime <=  16) time4pm.setHeight(12 * ROWSIZE);
+	    else time4pm.setVisibility(View.GONE);
+	    if(latestTime >= 17 && earliestTime <=  17) time5pm.setHeight(12 * ROWSIZE);
+	    else time5pm.setVisibility(View.GONE);
+	    if(latestTime >= 18 && earliestTime <=  18) time6pm.setHeight(12 * ROWSIZE);
+	    else time6pm.setVisibility(View.GONE);
+	    if(latestTime >= 19 && earliestTime <=  19) time7pm.setHeight(12 * ROWSIZE);
+	    else time7pm.setVisibility(View.GONE);
+	    if(latestTime >= 20 && earliestTime <=  20) time8pm.setHeight(12 * ROWSIZE);
+	    else time8pm.setVisibility(View.GONE);
+	    if(latestTime >= 21 && earliestTime <=  21) time9pm.setHeight(12 * ROWSIZE);
+	    else time9pm.setVisibility(View.GONE);
+	    
+	    
+	    TimeBlock latestBlock = new TimeBlock(8,0,8,0);
+	    
+	    // Monday
+	    for(TimeBlock course : monday) latestBlock = addTimeBlock(mondayView, course, latestBlock);
+	    latestBlock = new TimeBlock(8,0,8,0);
+	    
+	    // Tuesday
+	    for(TimeBlock course : tuesday) latestBlock = addTimeBlock(tuesdayView, course, latestBlock);
+	    latestBlock = new TimeBlock(8,0,8,0);
+	    
+	    // Wednesday
+	    for(TimeBlock course : wednesday) latestBlock = addTimeBlock(wednesdayView, course, latestBlock);
+	    latestBlock = new TimeBlock(8,0,8,0);
+	    
+	    // Thursday
+	    for(TimeBlock course : thursday) latestBlock = addTimeBlock(thursdayView, course, latestBlock);
+	    latestBlock = new TimeBlock(8,0,8,0);
+	    
+	    // Friday
+	    for(TimeBlock course : friday) latestBlock = addTimeBlock(fridayView, course, latestBlock);     
+        
+        ((ViewPager) collection).addView(view, 0);
+        
+        return view;
+    }
+
+    @Override
+    public void destroyItem(View arg0, int arg1, Object arg2) {
+        ((ViewPager) arg0).removeView((View) arg2);
+
+    }
+
+
+    @Override
+    public boolean isViewFromObject(View arg0, Object arg1) {
+        return arg0 == ((View) arg1);
+
+    }
+
+    @Override
+    public Parcelable saveState() {
+        return null;
+    }
+    
+    /********************************************************************
+	 * Method: addTimeBlock
+	 * Purpose: adds a time block to the layout, then returns added block
+	/*******************************************************************/
+	public TimeBlock addTimeBlock(LinearLayout day, TimeBlock course, TimeBlock latestBlock){
+		
+		// Calculate heights
+		int spacerHeight = latestBlock.compareToRowEnd(course) * this.ROWSIZE;
+    	int height = course.getRowSpan() * this.ROWSIZE;
+    	
+    	
+    	// Inflate spacer and class
+    	TextView spacer = (TextView) this.inflater.inflate(R.layout.course, null);
+    	TextView current = (TextView) this.inflater.inflate(R.layout.course, null);
+    	
+    	
+    	// Set course info. Secretly hide additional info in hint.
+    	current.setText(Html.fromHtml(course.getCourse().getCourseID() + "</b><br>" + course.getCourse().getLocation().replaceAll("Academic\\sBuilding", "AB") + "<br>" + course.getCourse().getTime()));
+    	current.setHint(Html.fromHtml(course.getCourse().getCourseName() + "</b><br>" + course.getCourse().getInstructor()));
+    	current.setBackgroundColor(Color.parseColor(course.getCourse().getColor()));
+    	
+    	// Set height
+    	current.setHeight(height);
+    	spacer.setHeight(spacerHeight);	
+    	
+    	// Listener for clicking of a course
+    	current.setOnClickListener(new OnClickListener() { 
+    		public void onClick(View v) { 
+				
+    			TextView current = (TextView) v;
+				
+    			// Switch hint and text
+				CharSequence hint = current.getHint();
+				CharSequence text = current.getText();
+				current.setText(hint);
+				current.setHint(text);
+			} 
+    	});
+    	
+    	// Add components
+    	day.addView(spacer);
+    	day.addView(current);
+    	
+    	return course;
+	}
+    
+	/********************************************************************
+	 * Method: sortCoursesToDay
+	 * Purpose: stores courses in order of time insider respective days
+	/*******************************************************************/
+	private void sortCoursesToDay(int index){
+		
+		// Days of the week
+		this.monday = new ArrayList<TimeBlock>();
+		this.tuesday = new ArrayList<TimeBlock>();
+		this.wednesday = new ArrayList<TimeBlock>();
+		this.thursday = new ArrayList<TimeBlock>();
+		this.friday = new ArrayList<TimeBlock>();
+		
+		for(int i = 0; i < this.workingCourses.get(index).size(); i++){
+			
+			// Get course and timeblock
+			Course current = this.workingCourses.get(index).get(i);
+			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current.getTime(), current);
+			
+			if (newBlock != null){
+
+				// Color
+				if(i < COLORS.length) current.setColor(COLORS[i]);
+				else current.setColor(COLORS[0]);
+			
+				// Add to correct block(s)
+				if(current.getDays().contains("M")) monday.add(newBlock);
+				if(current.getDays().contains("T")) tuesday.add(newBlock);
+				if(current.getDays().contains("W")) wednesday.add(newBlock);
+				if(current.getDays().contains("R")) thursday.add(newBlock);
+				if(current.getDays().contains("F")) friday.add(newBlock);
+			}
+		}	
+		
+		// Sort each day
+		Collections.sort(this.monday);
+		Collections.sort(this.tuesday);
+		Collections.sort(this.wednesday);
+		Collections.sort(this.thursday);
+		Collections.sort(this.friday);
+	}
+	
 }

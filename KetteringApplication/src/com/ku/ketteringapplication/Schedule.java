@@ -1,6 +1,5 @@
 package com.ku.ketteringapplication;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +42,6 @@ public class Schedule extends Activity{
 	 * Method: onCreate
 	 * Purpose: method for when application loads
 	/*******************************************************************/
-	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	
@@ -69,12 +67,12 @@ public class Schedule extends Activity{
 	    		// Add
 	    		courses.add(current);
 	    		
-	    		TimeBlock newBlock = TimeBlock.convertToTimeBlock(current);
+	    		TimeBlock newBlock = TimeBlock.convertToTimeBlock(current.getTime(), current);
 		    	
 		    	if(newBlock != null){
 		    	
 		    		// Check for latest time
-			    	int hours = newBlock.getEnd().getHours();
+			    	int hours = newBlock.getEndHours();
 			    	if (hours > latestTime) latestTime = hours;
 		    	}
 	    	}
@@ -137,23 +135,24 @@ public class Schedule extends Activity{
 	    else time9pm.setVisibility(View.GONE);
 	    
 	    
-	    TimeBlock latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    TimeBlock latestBlock = new TimeBlock(8,0,8,0);
+	    
 	    
 	    // Monday
 	    for(TimeBlock course : this.monday) latestBlock = addTimeBlock(mondayView, course, latestBlock);
-	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    latestBlock = new TimeBlock(8,0,8,0);
 	    
 	    // Tuesday
 	    for(TimeBlock course : this.tuesday) latestBlock = addTimeBlock(tuesdayView, course, latestBlock);
-	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    latestBlock = new TimeBlock(8,0,8,0);
 	    
 	    // Wednesday
 	    for(TimeBlock course : this.wednesday) latestBlock = addTimeBlock(wednesdayView, course, latestBlock);
-	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    latestBlock = new TimeBlock(8,0,8,0);
 	    
 	    // Thursday
 	    for(TimeBlock course : this.thursday) latestBlock = addTimeBlock(thursdayView, course, latestBlock);
-	    latestBlock = new TimeBlock(Time.valueOf("8:00:00"),Time.valueOf("8:00:00"));
+	    latestBlock = new TimeBlock(8,0,8,0);
 	    
 	    // Friday
 	    for(TimeBlock course : this.friday) latestBlock = addTimeBlock(fridayView, course, latestBlock); 
@@ -225,7 +224,7 @@ public class Schedule extends Activity{
 			
 			// Get course and timeblock
 			Course current = this.courses.get(i);
-			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current);
+			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current.getTime(), current);
 			
 			if (newBlock != null){
 

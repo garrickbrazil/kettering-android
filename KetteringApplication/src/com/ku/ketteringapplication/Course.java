@@ -46,6 +46,22 @@ public class Course {
 	}
 	
 
+	public Course(String courseName, String courseID, String time, String days){
+		
+		// Properties
+		this.courseName = courseName;
+		this.courseID = courseID;
+		this.section = "";
+		this.crn = 0;
+		this.instructor = "";
+		this.credits = 0;
+		this.time = time;
+		this.days = days;
+		this.location = "";
+		this.color = "";
+		this.dateRange = "";
+	}
+	
 	/********************************************************************
 	 * Constructor: Course
 	 * Purpose: creates a course given the course info and times

@@ -16,7 +16,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.google.gson.Gson;
 
 /********************************************************************
  * Class: DynamicCourses
@@ -54,6 +53,7 @@ public class DynamicCourses {
 		this.dynamicCoursesIDs = new ArrayList<String>();
 		this.dynamicCourseNames = new ArrayList<String>();
 		this.dynamicCoursesIDs.add("<Classes>");
+		this.workingSchedules = new ArrayList<List<Course>>();
 	}
 	
 	
@@ -152,123 +152,114 @@ public class DynamicCourses {
 			String subjectList = "";
 			
 			// 32 Subjects
-			List<String> subjects = new ArrayList<String>();
-			subjects.add("ACCT"); subjects.add("BIOL"); subjects.add("BUSN"); subjects.add("CHME"); subjects.add("CHEM"); subjects.add("CHN"); subjects.add("COMM"); subjects.add("CE"); subjects.add("CS"); subjects.add("ECON"); subjects.add("ECE"); subjects.add("EE"); subjects.add("ESL"); subjects.add("FINC"); subjects.add("GER"); subjects.add("HMGT"); subjects.add("HIST"); subjects.add("HUMN"); subjects.add("IME"); subjects.add("ISYS"); subjects.add("MFGO"); subjects.add("LS"); subjects.add("LIT"); subjects.add("MGMT"); subjects.add("MRKT"); subjects.add("MATH"); subjects.add("MECH"); subjects.add("MEDI"); subjects.add("ORTN"); subjects.add("PHIL"); subjects.add("PHYS"); subjects.add("SSCI"); subjects.add("SOC");
+			subjectList = "&sel_subj=ACCT&sel_subj=BIOL&sel_subj=BUSN&sel_subj=CHME&sel_subj=CHEM&sel_subj=CHN&sel_subj=COMM&sel_subj=CE&sel_subj=CS&sel_subj=ECON&sel_subj=ECE&sel_subj=EE&sel_subj=ESL&sel_subj=FINC&sel_subj=GER&sel_subj=HMGT&sel_subj=HIST&sel_subj=HUMN&sel_subj=IME&sel_subj=ISYS&sel_subj=MFGO&sel_subj=LS&sel_subj=LIT&sel_subj=MGMT&sel_subj=MRKT&sel_subj=MATH&sel_subj=MECH&sel_subj=MEDI&sel_subj=ORTN&sel_subj=PHIL&sel_subj=PHYS&sel_subj=SSCI&sel_subj=SOC";
+						
 			
+			URL url = new URL(begin + subjectList + end);
+			Elements mainContainer = Jsoup.parse(url, 0).getElementsByClass("datadisplaytable");
 			
-			for(int i = 0; i < subjects.size(); i++){
-				subjectList += "&sel_subj=" + subjects.get(i);
-			}
-				// Connect
-				//HttpGet dynamicGet = new HttpGet(begin + subjectList + end);
-				//HttpResponse response = client.execute(dynamicGet);
-				//String html = HTMLParser.parse(response);
+			// Valid container ?
+			if(mainContainer.size() > 0 && mainContainer.get(0).getElementsByTag("tbody").size() > 0){
 					
-				//Elements mainContainer = Jsoup.parse(html).getElementsByClass("datadisplaytable");
-				URL url = new URL(begin + subjectList + end);
-				Elements mainContainer = Jsoup.parse(url, 0).getElementsByClass("datadisplaytable");
-				// Valid container ?
-				if(mainContainer.size() > 0 && mainContainer.get(0).getElementsByTag("tbody").size() > 0){
-						
-					Elements coursesOffered = mainContainer.get(0).getElementsByTag("tbody").get(0).children();
+				Elements coursesOffered = mainContainer.get(0).getElementsByTag("tbody").get(0).children();
+				
+				// Regular expression to get credits (no HTML consistency)
+				Pattern p = Pattern.compile("^.+([0-9].[0-9][0-9][0-9])\\sCredits.*");
+				
+				for (int j = 0; j < coursesOffered.size()/2; j++) {
 					
-					// Regular expression to get credits (no HTML consistency)
-					Pattern p = Pattern.compile("^.+([0-9].[0-9][0-9][0-9])\\sCredits.*");
+					// New course
+					Course currentCourse = new Course();
+					String[] courseTitle = coursesOffered.get(j*2).text().split("\\s[-]\\s");
+							
+					// Properties
+					String courseName, courseID, section, instructor, location, dateRange, time, days;
+					double credits; int crn;
 					
-					for (int j = 0; j < coursesOffered.size()/2; j++) {
+					if ((courseTitle.length == 4 || courseTitle.length == 5) && coursesOffered.get(j*2+1).getElementsByTag("td").size() >= 8 && coursesOffered.get(j*2+1).getElementsByTag("td").get(0).text().split("\\d.\\d\\d\\d\\sCredits").length >= 2){
 						
-						// New course
-						Course currentCourse = new Course();
-						String[] courseTitle = coursesOffered.get(j*2).text().split("\\s[-]\\s");
-								
-						// Properties
-						String courseName, courseID, section, instructor, location, dateRange, time, days;
-						double credits; int crn;
 						
-						if ((courseTitle.length == 4 || courseTitle.length == 5) && coursesOffered.get(j*2+1).getElementsByTag("td").size() >= 8 && coursesOffered.get(j*2+1).getElementsByTag("td").get(0).text().split("\\d.\\d\\d\\d\\sCredits").length >= 2){
-							
-							
-							if(courseTitle.length == 4){
+						if(courseTitle.length == 4){
 
-								// Title info
-								courseName = courseTitle[0];
-								courseID = courseTitle[2];
-								section = courseTitle[3];
-								
-								// CRN
-								try{ crn = Integer.parseInt(courseTitle[1]); } catch(Exception e){ crn = 0; }
-							}
+							// Title info
+							courseName = courseTitle[0];
+							courseID = courseTitle[2];
+							section = courseTitle[3];
 							
-
-							else{
-
-								// First hyphen is part of title ?
-								courseName = courseTitle[0] + " - " + courseTitle[1];
-								courseID = courseTitle[3];
-								section = courseTitle[4];
-								
-								// CRN
-								try{ crn = Integer.parseInt(courseTitle[2]); } catch(Exception e){ crn = 0; }
-							}
-								
-							
-							// Special cases
-							if(section.contains("L")) courseID += "L";
-							if(section.contains("W")) courseID += "W";
-							if(section.contains("D")) courseID += "D";
-							
-							
-							// Credits
-							Matcher m = p.matcher(coursesOffered.get(j*2+1).getElementsByTag("td").get(0).text());
-							credits = 0;
-							
-							while(m.find()){
-								try{ credits = Double.parseDouble(m.group(1)); }
-								catch(Exception e){ credits = 0; }
-							}
-							
-							
-							Elements timeInfo = coursesOffered.get(j*2 + 1).getElementsByTag("td");
-							// Remove headers
-							timeInfo.remove(0); timeInfo.remove(0);
-							
-							
-							// Set time information
-							time = timeInfo.get(0).text();
-							days = timeInfo.get(1).text();
-							location = timeInfo.get(2).text();
-							dateRange = timeInfo.get(3).text();
-							instructor = timeInfo.get(5).text();
-							
-							
-							// Set all properties
-							currentCourse.setCourseName(courseName);
-							currentCourse.setCourseID(courseID);
-							currentCourse.setCredits(credits);
-							currentCourse.setCRN(crn);
-							currentCourse.setDateRange(dateRange);
-							currentCourse.setDays(days);
-							currentCourse.setInstructor(instructor);
-							currentCourse.setLocation(location);
-							currentCourse.setSection(section);
-							currentCourse.setTime(time);
-							
-							// Course doesn't already exists
-							if(this.dynamicCourses.get(courseID) == null){
-								
-								// Create new
-								List<Course> newList = new ArrayList<Course>();
-								newList.add(currentCourse);
-								this.dynamicCourses.put(courseID, newList);
-								this.dynamicCoursesIDs.add(courseID);
-							}
-							
-							// Already exists
-							else this.dynamicCourses.get(courseID).add(currentCourse);
-							
+							// CRN
+							try{ crn = Integer.parseInt(courseTitle[1]); } catch(Exception e){ crn = 0; }
 						}
-					}	
+						
+
+						else{
+
+							// First hyphen is part of title ?
+							courseName = courseTitle[0] + " - " + courseTitle[1];
+							courseID = courseTitle[3];
+							section = courseTitle[4];
+							
+							// CRN
+							try{ crn = Integer.parseInt(courseTitle[2]); } catch(Exception e){ crn = 0; }
+						}
+							
+						
+						// Special cases
+						if(section.contains("L")) courseID += "L";
+						if(section.contains("W")) courseID += "W";
+						if(section.contains("D")) courseID += "D";
+						
+						
+						// Credits
+						Matcher m = p.matcher(coursesOffered.get(j*2+1).getElementsByTag("td").get(0).text());
+						credits = 0;
+						
+						while(m.find()){
+							try{ credits = Double.parseDouble(m.group(1)); }
+							catch(Exception e){ credits = 0; }
+						}
+						
+						
+						Elements timeInfo = coursesOffered.get(j*2 + 1).getElementsByTag("td");
+						// Remove headers
+						timeInfo.remove(0); timeInfo.remove(0);
+						
+						
+						// Set time information
+						time = timeInfo.get(0).text();
+						days = timeInfo.get(1).text();
+						location = timeInfo.get(2).text();
+						dateRange = timeInfo.get(3).text();
+						instructor = timeInfo.get(5).text();
+						
+						
+						// Set all properties
+						currentCourse.setCourseName(courseName);
+						currentCourse.setCourseID(courseID);
+						currentCourse.setCredits(credits);
+						currentCourse.setCRN(crn);
+						currentCourse.setDateRange(dateRange);
+						currentCourse.setDays(days);
+						currentCourse.setInstructor(instructor);
+						currentCourse.setLocation(location);
+						currentCourse.setSection(section);
+						currentCourse.setTime(time);
+						
+						// Course doesn't already exists
+						if(this.dynamicCourses.get(courseID) == null){
+							
+							// Create new
+							List<Course> newList = new ArrayList<Course>();
+							newList.add(currentCourse);
+							this.dynamicCourses.put(courseID, newList);
+							this.dynamicCoursesIDs.add(courseID);
+						}
+						
+						// Already exists
+						else this.dynamicCourses.get(courseID).add(currentCourse);
+						
+					}
 				}	
+			}	
 			
 			
 			loaded = true;
@@ -279,68 +270,174 @@ public class DynamicCourses {
 		catch(Exception e){ e.printStackTrace(); loaded = false; return false; }
 	}
 	
-	
-	/********************************************************************
-	 * Method: checkPermutations
-	 * Purpose: goes through all possible outcomes of a class set
-	/*******************************************************************/
-	private void checkPermutations(String json, List<List<Course>> sets, int pos, List<List<Course>> workingCourses) {
-	    
-		// Base case
-		if (pos == sets.size()) {
-
-			try{
-				
-				List<Course> testCourses = new ArrayList<Course>();
-				
-				// Get JSON Courses
-				json = json.substring(0, json.length()-1); json += "]}";
-				JSONCourses jsonCourses = new Gson().fromJson(json, JSONCourses.class);
-		        
-				// Add JSON to testCourses
-		        for (JSONCourse currentCourse : jsonCourses.getCourses()) testCourses.add(sets.get(currentCourse.getSet()).get(currentCourse.getIndex()));
-		        
-		        // Test valid course combination
-		        if(this.testClasses(testCourses)) workingCourses.add(testCourses);
-			}
-			
-			catch(Exception e){}
-	    } 
-	    
-		// Fun stuff
-	    else for (int i = 0; i < sets.get(pos).size(); i++) checkPermutations(json + "{\"set\":" + pos + ",\"index\":" + i +"},", sets, pos + 1, workingCourses);		
-	}
-	
-	
+		
 	/********************************************************************
 	 * Method: generatePermutations
 	 * Purpose: sets class options with given class ID's
 	/*******************************************************************/
 	public void generatePermutations(){
 		
+		// Initialize working set
+		List<List<Course>> workingSet = new ArrayList<List<Course>>();
 		
-		List<List<Course>> choices = new ArrayList<List<Course>>();
-		List<List<Course>> results = new ArrayList<List<Course>>();
-		
-		// Get givenIDs
-		for(String givenID : this.currentCourseList){
+		// For each course
+		for(String courseID : currentCourseList){
 			
-			// Try to add course
-			try{ choices.add(this.dynamicCourses.get(givenID)); }
+			// Create a new working set
+			List<List<Course>> newSet = new ArrayList<List<Course>>();
 			
-			catch(Exception e){ 
-				this.workingSchedules = results; 
-				System.out.println(givenID + " is not in our records."); 
-				return;
+			// For each section in the course
+			for(Course course : this.dynamicCourses.get(courseID)){
+				
+				if(workingSet.size() == 0){
+					List<Course> cloneSet = new ArrayList<Course>();
+					testClasses(new ArrayList<Course>(),course,cloneSet);
+					newSet.add(cloneSet);
+				}
+				
+				else{
+					// Check all current workingSets
+					for(List<Course> courseSet : workingSet){
+						
+						List<Course> cloneSet = new ArrayList<Course>();
+						
+						// If fits into working set then add to newSet
+						if(testClasses(courseSet, course, cloneSet)){
+							newSet.add(cloneSet);
+						}
+					}
+				}
 			}
+			
+			workingSet = newSet;
 		}
 		
-		// Permutations
-		this.checkPermutations("{\"jsonCourses\": [", choices, 0, results);
-		this.workingSchedules = results;
+		workingSchedules = workingSet;	
+	}
+	
+	/********************************************************************
+	 * Method: testClasses
+	 * Purpose: tests if classes work together
+	/*******************************************************************/
+	public static boolean testClasses(List<Course> courses, Course courseCmp, List<Course> clone){
+		
+		
+		clone.add(courseCmp);
+
+		// Which days ?
+		boolean M = courseCmp.getDays().contains("M");
+		boolean T = courseCmp.getDays().contains("T");
+		boolean W = courseCmp.getDays().contains("W");
+		boolean R = courseCmp.getDays().contains("R");
+		boolean F = courseCmp.getDays().contains("F");
+		
+		boolean[] mon = new boolean[21-8 + 1];
+		boolean[] tues = new boolean[21-8 + 1];
+		boolean[] weds = new boolean[21-8 + 1];
+		boolean[] thurs = new boolean[21-8 + 1];
+		boolean[] fri = new boolean[21-8 + 1];
+	
+		
+		// Convert to TimeBlock
+		TimeBlock newBlock = TimeBlock.convertToTimeBlock(courseCmp.getTime(), courseCmp);
+		if(newBlock == null ) return false;
+		 
+		 for(int i = newBlock.getStartHours(); i < newBlock.getEndHours(); i++){
+			 
+			 if(M){
+				 if(!mon[i-8]) mon[i-8] = true;
+				 else return false;
+			 }
+			 if(T){
+				 if(!tues[i-8]) tues[i-8] = true;
+				 else return false;
+			 }
+			 if(W){
+				 if(!weds[i-8]) weds[i-8] = true;
+				 else return false;
+			 }
+			 if(R){
+				 if(!thurs[i-8]) thurs[i-8] = true;
+				 else return false;
+			 }
+			 if(F){
+				 if(!fri[i-8]) fri[i-8] = true;
+				 else return false;
+			 }
+		 }
+		
+		
+		for(Course current : courses){
+			
+			clone.add(current);
+			
+			// Which days ?
+			M = current.getDays().contains("M");
+			T = current.getDays().contains("T");
+			W = current.getDays().contains("W");
+			R = current.getDays().contains("R");
+			F = current.getDays().contains("F");
+				
+			// Convert to TimeBlock
+			newBlock = TimeBlock.convertToTimeBlock(current.getTime(),current);
+			if(newBlock == null ) return false;
+		
+			for(int i = newBlock.getStartHours(); i < newBlock.getEndHours(); i++){
+		
+				 if(M){
+					 if(!mon[i-8]) mon[i-8] = true;
+					 else return false;
+				 }
+				 if(T){
+					 if(!tues[i-8]) tues[i-8] = true;
+					 else return false;
+				 }
+				 if(W){
+					 if(!weds[i-8]) weds[i-8] = true;
+					 else return false;
+				 }
+				 if(R){
+					 if(!thurs[i-8]) thurs[i-8] = true;
+					 else return false;
+				 }
+				 if(F){
+					 if(!fri[i-8]) fri[i-8] = true;
+					 else return false;
+				 }
+			}
+		}
+				
+		return courses.size() > 0;
+		
 	}
 	
 	
+	public void generatePermutations(int setNum, List<Course> currentSet){
+		
+		if(setNum == currentCourseList.size()){
+			
+			// Clone
+			List<Course> clone = new ArrayList<Course>();
+			for(Course current : currentSet) clone.add(current);
+			
+			workingSchedules.add(clone);
+			if(currentSet.size() > 0) currentSet.remove(currentSet.size() -1);
+		}
+		
+		else{
+			
+			for(Course course : this.dynamicCourses.get(currentCourseList.get(setNum))){
+				currentSet.add(course);
+				if(testClasses(currentSet)){
+					generatePermutations(setNum + 1, currentSet);
+				}
+				else {
+					if(currentSet.size() > 0) currentSet.remove(currentSet.size() -1);
+				}
+			}
+			if(currentSet.size() > 0) currentSet.remove(currentSet.size() -1);
+		}
+	}
 	
 	/********************************************************************
 	 * Method: testClasses
@@ -366,7 +463,7 @@ public class DynamicCourses {
 			boolean F = current.getDays().contains("F");
 				
 			// Convert to TimeBlock
-			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current.getTime());
+			TimeBlock newBlock = TimeBlock.convertToTimeBlock(current.getTime(), current);
 			if(newBlock == null ) return false;
 			 
 			 if(M){
