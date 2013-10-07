@@ -16,6 +16,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.annotation.SuppressLint;
+import android.util.SparseArray;
+
 
 /********************************************************************
  * Class: DynamicCourses
@@ -25,6 +28,7 @@ public class DynamicCourses {
 
 	// Properties
 	private Map<String, List<Course>> dynamicCourses;
+	private SparseArray<Boolean> courseConflicts;
 	private List<String> dynamicCoursesIDs;
 	private List<String> currentCourseList;
 	private List<List<Course>> workingSchedules;
@@ -40,6 +44,7 @@ public class DynamicCourses {
 	 * Constructor: DynamicCourses
 	 * Purpose: default constructor
 	/*******************************************************************/
+	@SuppressLint("UseSparseArrays")
 	public DynamicCourses(){
 	
 		this.termIndex = 0;
@@ -54,6 +59,7 @@ public class DynamicCourses {
 		this.dynamicCourseNames = new ArrayList<String>();
 		this.dynamicCoursesIDs.add("<Classes>");
 		this.workingSchedules = new ArrayList<List<Course>>();
+		this.courseConflicts = new SparseArray<Boolean>();
 	}
 	
 	
@@ -243,6 +249,11 @@ public class DynamicCourses {
 						currentCourse.setLocation(location);
 						currentCourse.setSection(section);
 						currentCourse.setTime(time);
+						currentCourse.M = days.contains("M");
+						currentCourse.T = days.contains("T");
+						currentCourse.W = days.contains("W");
+						currentCourse.R = days.contains("R");
+						currentCourse.F = days.contains("F");
 						
 						// Course doesn't already exists
 						if(this.dynamicCourses.get(courseID) == null){
@@ -319,9 +330,54 @@ public class DynamicCourses {
 	 * Method: testClasses
 	 * Purpose: tests if classes work together
 	/*******************************************************************/
-	public static boolean testClasses(List<Course> courses, Course courseCmp, List<Course> clone){
+	public boolean testClasses(List<Course> courses, Course courseCmp, List<Course> clone){
+	
 		
+		clone.add(courseCmp);
+		TimeBlock cmpBlock = TimeBlock.convertToTimeBlock(courseCmp.getTime(), courseCmp);
 		
+		int startC = cmpBlock.getStartHours() * 60 + cmpBlock.getStartMin();
+		int endC = cmpBlock.getEndHours() * 60 + cmpBlock.getEndMin();
+		int crn = courseCmp.getCRN();
+		int crnS;
+		
+		for(Course course : courses){	
+			
+			if (crn < course.getCRN()){
+				crnS = crn*100000 + (course.getCRN());
+			}
+			else {
+				crnS = (course.getCRN()*100000) + crn;
+			}
+			clone.add(course);
+			if(this.courseConflicts.get(crnS) != null){
+				if (!this.courseConflicts.get(crnS)) return false;
+			}
+			else {
+				TimeBlock block = TimeBlock.convertToTimeBlock(course.getTime(), course);
+				
+				int startB = block.getStartHours() * 60 + block.getStartMin();
+				int endB = block.getEndHours() * 60 + block.getEndMin();
+					
+				if((startB >= startC && startB <= endC) || (endB <= endC && endB >= startC)){
+					
+					if ((course.M && courseCmp.M) || (course.T && courseCmp.T) || (course.W && courseCmp.W) || (course.R && courseCmp.R) || (course.F && courseCmp.F)){
+						this.courseConflicts.put(crnS, false);
+						return false;
+					}
+					else{
+						this.courseConflicts.put(crnS, true);
+					}
+				}
+				else{
+					this.courseConflicts.put(crnS, true);
+				}
+			}
+		}
+					
+		return courses.size() > 0;
+		
+		/*
 		clone.add(courseCmp);
 
 		// Which days ?
@@ -408,7 +464,7 @@ public class DynamicCourses {
 		}
 				
 		return courses.size() > 0;
-		
+		*/
 	}
 	
 	

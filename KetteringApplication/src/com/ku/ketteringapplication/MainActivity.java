@@ -1308,7 +1308,6 @@ public class MainActivity extends Activity {
     public void viewSchedulePermutations(View v){ 
     	
     	this.last_view.add(0, SCHEDULER);
-    	scheduler.generatePermutations();
     	new ViewScheduleTask().execute(scheduler);
     	
     	/*
@@ -2114,7 +2113,7 @@ public class MainActivity extends Activity {
     	
         protected Boolean doInBackground(DynamicCourses... scheduler) {  
     		
-        	
+        	scheduler[0].generatePermutations();
         	
         	// If no working schedules
         	return (scheduler[0].getWorkingSchedules().size() > 0);

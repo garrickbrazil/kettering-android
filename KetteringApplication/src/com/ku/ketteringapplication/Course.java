@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 public class Course {
 	
 	// Properties
+	boolean M, T, W, R, F;
 	private String courseName;
 	private String courseID;
 	private String section;
@@ -104,12 +105,26 @@ public class Course {
 			// Course times
 			this.time = timeInfo.get(1).text();
 			this.days = timeInfo.get(2).text();
+			
+			this.M = this.days.contains("M");
+			this.T = this.days.contains("T");
+			this.W = this.days.contains("W");
+			this.R = this.days.contains("R");
+			this.F = this.days.contains("F");
+			
 			this.location = timeInfo.get(3).text();
 			this.dateRange = timeInfo.get(4).text();
 		}
 		
 		// Wrong format
 		else {
+			
+			this.M = false;
+			this.T = false;
+			this.W = false;
+			this.R = false;
+			this.F = false;
+			
 			
 			// Defaults
 			this.courseName = "";
