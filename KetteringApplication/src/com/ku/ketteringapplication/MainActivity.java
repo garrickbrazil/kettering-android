@@ -23,11 +23,12 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Html;
-import android.view.Display;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -65,8 +66,6 @@ public class MainActivity extends Activity {
 	private News news;
 	private Library lib;
 	private DynamicCourses scheduler;
-	private int width;
-	private int height;
 	private Context c;
 	private ViewPager schedulerPager;
 	private Spinner schedulerIndexer;
@@ -86,7 +85,6 @@ public class MainActivity extends Activity {
 	 * Method: onCreate
 	 * Purpose: method for when application loads
 	/*******************************************************************/
-	@Override @SuppressWarnings("deprecation")
     public void onCreate(Bundle savedInstanceState) {
         
 		super.onCreate(savedInstanceState); 
@@ -129,14 +127,7 @@ public class MainActivity extends Activity {
         this.icons_glob = icons_glob;
         this.icons_all = icons_all;
         
-        setContentView(R.layout.activity_main);
-        
-        // Used to adjust icon size (temporary work-around) TODO
-        Display display = getWindowManager().getDefaultDisplay(); 
-        this.width = display.getWidth();
-        this.height = display.getHeight();
-        
-        ((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(this, this.icons_glob, this.height, this.width));
+        homeScreen();
         this.orientation = getRequestedOrientation();
         
         //EditText login = (EditText) findViewById(R.id.signinField);
@@ -320,55 +311,51 @@ public class MainActivity extends Activity {
 		EditText passwordField = (EditText) findViewById(R.id.passwordField);
 		Button signinButton = (Button) findViewById(R.id.signinButton);
 		Button signoutButton = (Button) findViewById(R.id.signoutButton);
-		LinearLayout gridContainer = (LinearLayout) findViewById(R.id.gridContainer);
-		LinearLayout loginContainer = (LinearLayout) findViewById(R.id.loginContainer);
     	
 
     	if(this.student.getLoggedIn()){
 			
-			// Layout
-			LinearLayout.LayoutParams loginContainerParams = (LayoutParams) loginContainer.getLayoutParams();
-			LinearLayout.LayoutParams gridContainerParams = (LayoutParams) gridContainer.getLayoutParams();
+    		// Layout
+    		ViewGroup.MarginLayoutParams gridParams = (ViewGroup.MarginLayoutParams) grid.getLayoutParams();
 			
 			// Show functions
-			grid.setAdapter(new ImageAdapter(getApplicationContext(), this.icons_all, height, width));
+			grid.setAdapter(new ImageAdapter(getApplicationContext(), this.icons_all));
 
 			// Show & hide
 			signinField.setVisibility(View.GONE);
 			passwordField.setVisibility(View.GONE);
 			signinButton.setVisibility(View.GONE);
 			signoutButton.setVisibility(View.VISIBLE);
-
-			loginContainerParams.weight = 20;
-			gridContainerParams.weight = 80;
+			
+			gridParams.bottomMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 44, getResources().getDisplayMetrics());
 
 			// Adjust weight
-			loginContainer.setLayoutParams(loginContainerParams);
-			gridContainer.setLayoutParams(gridContainerParams);
+			grid.setLayoutParams(gridParams);
+			signoutButton.requestFocus();
     	}
     	
     	
     	else{
     		
     		// Layout
-    		LinearLayout.LayoutParams loginContainerParams = (LayoutParams) loginContainer.getLayoutParams();
-    		LinearLayout.LayoutParams gridContainerParams = (LayoutParams) gridContainer.getLayoutParams();
-    		
+    		ViewGroup.MarginLayoutParams gridParams = (ViewGroup.MarginLayoutParams) grid.getLayoutParams();
+    					
             // Show functions
-            grid.setAdapter(new ImageAdapter(this, this.icons_glob, height, width));
+            grid.setAdapter(new ImageAdapter(this, this.icons_glob));
             
             // Show & hide
             signinField.setVisibility(View.VISIBLE);
             passwordField.setVisibility(View.VISIBLE);
             signinButton.setVisibility(View.VISIBLE);
     		signoutButton.setVisibility(View.GONE);
+
     		
-    		loginContainerParams.weight = 50;
-    		gridContainerParams.weight = 50;
+    		gridParams.bottomMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 148, getResources().getDisplayMetrics());
     		
-    		// Adjust weight
-    		loginContainer.setLayoutParams(loginContainerParams);
-    		gridContainer.setLayoutParams(gridContainerParams);
+			// Adjust weight
+			grid.setLayoutParams(gridParams);
+			
+			signinField.requestFocus();
     	}
     }
     
@@ -1261,30 +1248,7 @@ public class MainActivity extends Activity {
     	
     	this.student = new Student();
     	
-    	// Elements
-    	LinearLayout gridContainer = (LinearLayout) findViewById(R.id.gridContainer);
-    	LinearLayout loginContainer = (LinearLayout) findViewById(R.id.loginContainer);
-    	GridView grid = (GridView) findViewById(R.id.grid);
-    	
-        // Show functions
-        grid.setAdapter(new ImageAdapter(this, this.icons_glob, height, width));
-        
-        // Show & hide
-        ((EditText) findViewById(R.id.signinField)).setVisibility(View.VISIBLE);
-        ((EditText) findViewById(R.id.passwordField)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.signinButton)).setVisibility(View.VISIBLE);
-        ((Button) findViewById(R.id.signoutButton)).setVisibility(View.GONE);
-		
-		LinearLayout.LayoutParams loginContainerParams = (LayoutParams) loginContainer.getLayoutParams();
-		LinearLayout.LayoutParams gridContainerParams = (LayoutParams) gridContainer.getLayoutParams();
-		
-		loginContainerParams.weight = 50;
-		gridContainerParams.weight = 50;
-		
-		// Adjust weight
-		loginContainer.setLayoutParams(loginContainerParams);
-		gridContainer.setLayoutParams(gridContainerParams);
-		
+    	homeScreen();
     }
     
     
@@ -1384,7 +1348,7 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
+				//  Auto-generated method stub
 				
 			}
 
@@ -1545,30 +1509,8 @@ public class MainActivity extends Activity {
         protected void onPostExecute(Boolean result) {
         	
 			if(result){
-				
-				LinearLayout gridContainer = (LinearLayout) findViewById(R.id.gridContainer);
-				LinearLayout loginContainer = (LinearLayout) findViewById(R.id.loginContainer);
-				
-				// Functions
-				((GridView) findViewById(R.id.grid)).setAdapter(new ImageAdapter(getApplicationContext(), icons_all, height, width));
-
-				// Show & hide
-				((EditText) findViewById(R.id.signinField)).setVisibility(View.GONE);
-				((EditText) findViewById(R.id.passwordField)).setVisibility(View.GONE);
-				((Button) findViewById(R.id.signinButton)).setVisibility(View.GONE);
-				((Button) findViewById(R.id.signoutButton)).setVisibility(View.VISIBLE);
-
-				// Layout
-				LinearLayout.LayoutParams loginContainerParams = (LayoutParams) loginContainer.getLayoutParams();
-				LinearLayout.LayoutParams gridContainerParams = (LayoutParams) gridContainer.getLayoutParams();
-				
-				loginContainerParams.weight = 20;
-				gridContainerParams.weight = 80;
-
-				// Adjust weight
-				loginContainer.setLayoutParams(loginContainerParams);
-				gridContainer.setLayoutParams(gridContainerParams);
 				((TextView) findViewById(R.id.loginNotification)).setText("");
+				homeScreen();
 			}
 
 			// Failed
@@ -2187,10 +2129,7 @@ public class MainActivity extends Activity {
     				}
 
     				@Override
-    				public void onNothingSelected(AdapterView<?> arg0) {
-    					// TODO Auto-generated method stub
-    					
-    				}
+    				public void onNothingSelected(AdapterView<?> arg0) {}
 
     	        });
     	        
@@ -2773,5 +2712,4 @@ class SchedulerPagerAdapter extends PagerAdapter {
 		Collections.sort(this.thursday);
 		Collections.sort(this.friday);
 	}
-	
 }

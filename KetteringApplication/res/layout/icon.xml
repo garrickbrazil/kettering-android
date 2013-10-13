@@ -1,25 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:orientation="vertical"
-android:clickable="true"
-android:gravity="center_horizontal" >
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="48dp"
+	android:layout_height="68dp"
+	android:orientation="vertical"
+	android:clickable="true"
+	android:gravity="center_horizontal" >
     
     <ImageView
+        android:contentDescription="@string/icon"
         android:id="@+id/image"
-        android:layout_width="50dp" 
-        android:layout_height="50dp" >
+        android:layout_width="match_parent" 
+        android:layout_height="48dp" >
     </ImageView>
 
 	<TextView
+	    android:textIsSelectable="false"
         android:id="@+id/title"
-        android:textSize="14dp" 
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:textSize="14sp" 
         android:textColor="#000000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
         android:layout_gravity="center_horizontal"
         android:gravity="center"/>
-
 </LinearLayout>

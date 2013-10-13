@@ -12,13 +12,10 @@ import android.widget.TextView;
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private Icon[] icons;
-    private int landHeight;
-
     
-    public ImageAdapter(Context c, Icon[] icons, int height, int width) {
+    public ImageAdapter(Context c, Icon[] icons) {
         this.mContext = c;
         this.icons = icons;
-        this.landHeight = ((height > width)?width:height);
     }
 
     public int getCount() {
@@ -48,13 +45,6 @@ public class ImageAdapter extends BaseAdapter {
         text.setText(icons[position].getTitle());
         image.setImageResource(this.icons[position].getImage());
         view.setOnClickListener(this.icons[position].getListener());
-        
-        int newheight = (int)((this.landHeight*.1086));//.5*.43)/2);
-        
-        if(image.getLayoutParams().height > newheight) {
-        	image.getLayoutParams().height = newheight;
-        	image.getLayoutParams().width = newheight;
-        }
         
         return view;
     }

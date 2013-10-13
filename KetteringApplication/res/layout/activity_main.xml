@@ -1,118 +1,94 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/blue_grid_edit"
-    android:orientation="vertical"
-    android:weightSum="100" >
-    
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
-	    android:id="@+id/gridContainer"
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_marginTop="12dp"
-	    android:layout_weight="50"
-	    android:orientation="vertical" >
+    android:orientation="vertical">
 
-      	<GridView
-	        xmlns:android="http://schemas.android.com/apk/res/android"
-	        android:id="@+id/grid"
-	        android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:columnWidth="68dp"
-	        android:gravity="center"
-	        android:horizontalSpacing="12dp"
-	        android:numColumns="auto_fit"
-	        android:stretchMode="columnWidth"
-	        android:verticalSpacing="10dp" >
-    	</GridView>
-    	
- 	</LinearLayout>
-      	
-      	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		    android:id="@+id/loginContainer"
-		    xmlns:tools="http://schemas.android.com/tools"
-		    android:layout_width="match_parent"
-		    android:layout_height="0dp"
-		    android:layout_weight="50"
-		    android:weightSum="100"
-		    android:orientation="vertical" 
-		    android:gravity="center_vertical|bottom">
-			
-      	    <TextView
-		    	android:id="@+id/loginNotification" 
-		    	android:layout_width="match_parent" 
-		    	android:layout_height="wrap_content"  
-		    	android:textSize="12dp"
-		    	android:textColor="#D00808"
-		    	android:layout_marginLeft="20dp"
-			   	android:layout_marginRight="10dp" >
-			</TextView>
-      	    
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		    xmlns:tools="http://schemas.android.com/tools"
-		    android:layout_width="match_parent"
-		    android:layout_height="68dp"
-		    android:weightSum="100"
-		    android:orientation="vertical" 
-		    android:gravity="center_vertical|bottom">
-      		
-			<EditText 
-			   	android:id="@+id/signinField" 
-			   	android:layout_width="match_parent" 
-			   	android:layout_height="0dp" 
-			   	android:inputType="textEmailAddress" 
-			   	android:textSize="15dp"
-			   	android:textColorHint="#2B2B2B"
-			   	android:hint="@string/usernameHint"
-			   	android:layout_weight="50"
-			   	android:layout_marginLeft="10dp"
-			   	android:layout_marginRight="10dp" >
-			</EditText>
-			
-			<EditText 
-		    	android:id="@+id/passwordField" 
-		    	android:layout_width="match_parent"
-		    	android:layout_weight="50" 
-		    	android:layout_height="0dp"
-		    	android:textSize="15dp" 
-		    	android:textColorHint="#2B2B2B"
-		    	android:inputType="textPassword" 
-		    	android:hint="@string/passwordHint"
-		    	android:layout_marginLeft="10dp"
-			   	android:layout_marginRight="10dp" >
-			</EditText>
-			</LinearLayout>
-			<Button
-		     	android:id="@+id/signinButton"
-		     	android:layout_width="match_parent"
-		     	android:layout_height="34dp"
-		     	android:background="@layout/custom_button"
-		     	android:text="@string/signinButtonText"
-		     	android:textColor="#FFFFFF"
-		     	android:onClick="signIn"
-		     	android:textSize="20dp"
-		     	android:layout_marginLeft="10dp"
-		     	android:layout_marginTop="3dp"
-		    	android:layout_marginBottom="10dp"
-		    	android:layout_marginRight="10dp" >
-		 	</Button>
-		 	
-			<Button
-		     	android:id="@+id/signoutButton"
-		     	android:layout_width="match_parent"
-		     	android:layout_height="34dp"
-		     	android:background="@layout/custom_button"
-		     	android:text="@string/signoutButtonText"
-		     	android:textColor="#FFFFFF"
-		     	android:onClick="signOut"
-		     	android:visibility="gone"
-		     	android:textSize="20dp"
-		     	android:layout_marginLeft="10dp"
-		    	android:layout_marginBottom="10dp"
-		    	android:layout_marginRight="10dp" >
-		 	</Button>
-			
-		</LinearLayout>	
-    </LinearLayout>
+	<GridView
+		android:id="@+id/grid"
+		android:layout_alignParentTop="true"
+		android:layout_width="match_parent"
+		android:layout_height="fill_parent"
+		android:layout_marginBottom="148dp"
+		android:layout_marginTop="10dp"
+		android:columnWidth="68dp"
+		android:gravity="center"
+		android:horizontalSpacing="12dp"
+		android:numColumns="auto_fit"
+		android:stretchMode="columnWidth"
+		android:verticalSpacing="10dp" >
+	</GridView>			
+      	   
+	<TextView
+	    android:textIsSelectable="false"
+		android:id="@+id/loginNotification" 
+		android:layout_width="match_parent" 
+		android:layout_height="25dp"  
+		android:textSize="12sp"
+		android:textColor="#D00808"
+		android:layout_marginLeft="20dp"
+		android:layout_marginRight="10dp"
+		android:layout_marginBottom="120dp"
+		android:layout_alignParentBottom="true" >
+	</TextView>
+
+	<EditText 
+		android:id="@+id/signinField" 
+		android:layout_width="match_parent" 
+		android:layout_height="35dp" 
+		android:inputType="textEmailAddress" 
+		android:textSize="15sp"
+		android:textColorHint="#2B2B2B"
+		android:hint="@string/usernameHint"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:layout_marginBottom="82dp"
+		android:layout_alignParentBottom="true" >
+	</EditText>
+		
+	<EditText 
+		android:id="@+id/passwordField" 
+		android:layout_width="match_parent"
+		android:layout_height="35dp"
+		android:textSize="15sp" 
+		android:textColorHint="#2B2B2B"
+		android:inputType="textPassword" 
+		android:hint="@string/passwordHint"
+		android:layout_marginLeft="10dp"
+		android:layout_marginRight="10dp"
+		android:layout_marginBottom="44dp"
+		android:layout_alignParentBottom="true" >
+	</EditText>
+	
+	<Button
+		android:id="@+id/signinButton"
+		android:layout_width="match_parent"
+		android:layout_height="34dp"
+		android:background="@layout/custom_button"
+		android:text="@string/signinButtonText"
+		android:textColor="#FFFFFF"
+		android:onClick="signIn"
+		android:textSize="20sp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginBottom="10dp"
+		android:layout_marginRight="10dp"
+		android:layout_alignParentBottom="true" >
+	</Button>
+	 	
+	<Button
+		android:id="@+id/signoutButton"
+		android:layout_width="match_parent"
+		android:layout_height="34dp"
+		android:background="@layout/custom_button"
+		android:text="@string/signoutButtonText"
+		android:textColor="#FFFFFF"
+		android:onClick="signOut"
+		android:visibility="gone"
+		android:textSize="20sp"
+		android:layout_marginLeft="10dp"
+		android:layout_marginBottom="10dp"
+		android:layout_marginRight="10dp"
+		android:layout_alignParentBottom="true" >
+	</Button>
+</RelativeLayout>

@@ -10,6 +10,7 @@
     <string name="passwordHint">Password</string>
     <string name="scheduleRow">15px</string>
     <string name="scheduleRowHeader">20dp</string>
+    <string name="icon">Icon</string>
     
     <string name="search_type_prompt">Type</string>
     <string-array name="search_options">
