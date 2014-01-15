@@ -1,125 +1,78 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout
+ <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
+	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="horizontal"
-	android:clickable="true"
-	android:gravity="left|center_vertical" >
-	
-    
-    
-    <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:orientation="horizontal"
-	android:clickable="true"
-	android:layout_marginBottom="1dp"
 	android:background="@color/odd"
-	android:gravity="center" >	
+	android:clickable="true" >
 	
-	<WebView  xmlns:android="http://schemas.android.com/apk/res/android"
+	<ImageView
+	    android:contentDescription="@string/iconCD"
+	    android:visibility="gone"
 	    android:id="@+id/image"
-	    android:layout_width="70dp"
-	    android:layout_height="70dp"
+	    android:hardwareAccelerated="false"
+	    android:layout_alignTop="@+id/temp"
+	    android:layout_alignBottom="@+id/temp"
+	    android:layout_width="90dp"
+	    android:layout_height="0dp"
+	    android:scaleType="fitXY"
 	    android:isScrollContainer="false"
-	    android:layout_margin="8dp"
-	    android:layout_gravity="center_vertical" />
-	</LinearLayout>
-    
-    
- 	
-	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/eventTable"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:background="@color/odd"
-	    android:shrinkColumns="*"
-	    android:gravity="center_vertical"
-	    android:stretchColumns="*"
-	   	android:layout_marginBottom="1dp" >
+	    />
 	
-   		    
-   		    <TableRow
-	        android:id="@+id/summaryRow"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:background="@color/odd"
-	        android:gravity="center_horizontal|center_vertical" >
-   		         
-   		    <TextView
-   		        android:id="@+id/summary"
-   		        android:textColor="@color/tableFontColor"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_span="12"
-	            android:layout_marginTop="8dp"
-	            android:layout_marginLeft="8dp"
-	            android:layout_marginRight="8dp"
-	            android:gravity="left"
-	            android:textSize="16dp"
-	            android:textStyle="bold" >
-	        </TextView>
+	<LinearLayout
+	    android:id="@+id/temp"
+	    android:layout_gravity="center"
+	    android:layout_alignParentLeft="true"
+		android:layout_marginLeft="10dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:minHeight="64dp"
+		android:gravity="center_vertical"
+		android:orientation="vertical" >
+			     
+  		<TextView
+  		    android:textIsSelectable="true"
+  		    android:id="@+id/summary"
+  		    android:textColor="@color/tableFontColor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:textSize="16sp"
+            android:textStyle="bold" >
+        </TextView>
 
-	    </TableRow>
-   		    <TableRow
-	        android:id="@+id/timeRow"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:background="@color/odd"
-	        android:gravity="center_horizontal|center_vertical" >
-   		         
-   		    <TextView
-   		        android:id="@+id/time"
-   		        android:textColor="@color/tableFontColor"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_span="12"
-	            android:layout_marginTop="3dp"
-	            android:layout_marginBottom="8dp"
-	            android:layout_marginLeft="8dp"
-	            android:layout_marginRight="8dp"
-	            android:gravity="left"
-	            android:textSize="16dp" >
-	        </TextView>
-
-	    </TableRow>
-   		    <TableRow
-   		        android:id="@+id/infoRow"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:background="@color/even"
-		        android:visibility="gone"
-		        android:gravity="center_horizontal" 
-		         >
-	   		    <TextView
-	   		        android:id="@+id/link"
-	   		        android:textColor="@color/tableFontColor"
-		            android:layout_width="match_parent"
-		            android:layout_margin="8dp"
-		            android:layout_height="wrap_content"
-		            android:layout_span="12"
-		            android:textSize="16dp" >
-		        </TextView>
-		        <TextView
-	   		        android:id="@+id/index"
-	   		        android:textColor="@color/tableFontColor"
-		            android:layout_width="match_parent"
-		            android:layout_margin="8dp"
-		            android:layout_height="wrap_content"
-		            android:layout_span="12"
-		            android:textSize="16dp" >
-		        </TextView>
-		        <TextView
-	   		        android:id="@+id/indexDay"
-	   		        android:textColor="@color/tableFontColor"
-		            android:layout_width="match_parent"
-		            android:layout_margin="8dp"
-		            android:layout_height="wrap_content"
-		            android:layout_span="12"
-		            android:textSize="16dp" >
-		        </TextView>
-		    </TableRow>
-   		</TableLayout>
-</LinearLayout>
+   	    <TextView
+   	        android:textIsSelectable="true"
+  		    android:id="@+id/info"
+  		    android:textColor="@color/tableFontColor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:textSize="16sp" >
+        </TextView>
+        <TextView
+            android:textIsSelectable="false"
+  		    android:id="@+id/index"
+            android:layout_width="0dp"
+            android:layout_height="0dp"	            
+            android:textSize="12sp"
+            android:visibility="gone" >
+        </TextView>
+        <TextView
+            android:textIsSelectable="false"
+  		    android:id="@+id/indexDay"
+            android:layout_width="0dp"
+           	android:layout_height="0dp"
+            android:textSize="12sp"
+            android:visibility="gone" >
+        </TextView>
+        <TextView 
+            android:textIsSelectable="false"
+  		    android:id="@+id/link"
+            android:layout_width="0dp"
+           	android:layout_height="0dp"
+            android:textSize="12sp"
+            android:visibility="gone" >
+         </TextView>
+	</LinearLayout>
+</RelativeLayout>

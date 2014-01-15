@@ -1,101 +1,77 @@
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="100"
     android:orientation="vertical"
     android:background="@drawable/blue_grid_edit" >
-    
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="12"
-	    android:gravity="center_vertical"
-	    android:orientation="horizontal" >
-     
-     <ImageView
-        android:id="@+id/backImage"
-        android:layout_marginBottom = "2dp"
-        android:layout_width="40dp" 
-        android:layout_height="40dp"
-        android:layout_marginLeft="10dp"
-        android:clickable="true"
-        android:onClick="back"
-        android:src="@drawable/arrowleft" >
-    </ImageView>
-    
-    <TextView
-		android:layout_width="fill_parent"
-		android:layout_height="match_parent"
-		android:gravity="center"
-		android:text="Kettering Events"
-		android:textSize="22dp"
-		android:textStyle="bold|italic">
-     </TextView>
-    </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="88"
-    android:orientation="vertical" >
-    
-    
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:gravity="left"
-    android:orientation="vertical"
-   	android:layout_marginBottom="0dp" >
-    
-
 	
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	<ImageView
+	    android:contentDescription="@string/backCD"
+		android:layout_marginTop="4dp"
+		android:layout_marginLeft="4dp"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentTop="true"
+		android:layout_width="38dp" 
+		android:layout_height="38dp"
+		android:clickable="true"
+		android:onClick="back"
+		android:src="@drawable/arrowleft" >
+	</ImageView>
+	    
+	<TextView
+	    android:layout_marginTop="4dp"
+		android:layout_width="fill_parent"
+		android:layout_height="38dp"
+		android:layout_alignParentTop="true"
+		android:gravity="center"
+		android:text="@string/eventsTitle"
+		android:textSize="22sp"
+		android:textStyle="bold|italic">
+	</TextView>
+
+	<ImageView
+	    android:contentDescription="@string/homeCD"
+		android:layout_marginTop="4dp"
+		android:layout_marginLeft="4dp"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentTop="true"
+		android:layout_width="34dp" 
+		android:layout_height="34dp"
+		android:clickable="true"
+		android:visibility="gone"
+		android:onClick="homeScreen"
+		android:src="@drawable/home" >
+	</ImageView>
+	<ScrollView
 	  	android:id="@+id/eventsScroll"
+	  	android:layout_marginTop="46dp"
+	  	android:layout_alignParentTop="true"
 	  	android:layout_width="fill_parent"
-	   	android:layout_gravity="center_vertical"
-	   	android:background="@color/even"
-	   	android:layout_height="wrap_content"
+	   	android:layout_height="fill_parent"
 	   	android:gravity="left" >
 	   	
 		<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical" >
-        	
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+	       	
 		    <LinearLayout
-				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:id="@+id/eventsContainer"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="vertical" >
-				
 		    </LinearLayout>
-		    <LinearLayout
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:background="@color/odd"
-				android:orientation="vertical" >
-				<Button
-			     	android:id="@+id/loadMoreButton"
-			     	android:layout_width="match_parent"
-			     	android:background="@layout/custom_button"
-			     	android:text="Load more"
-			     	android:textColor="#FFFFFF"
-			     	android:onClick="loadMoreEvents"
-			     	android:textSize="18dp"
-			     	android:layout_height="34dp"
-			    	android:layout_marginTop="10dp"
-			    	android:layout_marginBottom="10dp" >
-			 	</Button>
-        	</LinearLayout>
-   		</LinearLayout>
-    </ScrollView>
-    </LinearLayout>
- 	</LinearLayout>
-</LinearLayout>
+			<Button
+		    	android:id="@+id/loadMoreButton"
+		    	android:layout_width="match_parent"
+		    	android:background="@layout/straight_button"
+		    	android:text="@string/loadMessage"
+		    	android:textColor="#FFFFFF"
+		    	android:onClick="loadMoreEvents"
+		    	android:textSize="18sp"
+		    	android:layout_height="34dp"
+   				>
+			</Button>
+		</LinearLayout>
+	</ScrollView>
+</RelativeLayout>

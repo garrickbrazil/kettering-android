@@ -16,6 +16,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.ku.ketteringapplication.MainActivity.StoreScheduleTermTask;
+
 import android.annotation.SuppressLint;
 import android.util.SparseArray;
 
@@ -142,8 +144,9 @@ public class DynamicCourses {
 	/********************************************************************
 	 * Method: storeDynamicCourses()
 	 * Purpose: store all dynamic courses to memory
-	/*******************************************************************/
-	public boolean storeDynamicCourses(){
+	/
+	 * @param context *******************************************************************/
+	public boolean storeDynamicCourses(StoreScheduleTermTask context){
 		
 		try {
 			
@@ -173,6 +176,12 @@ public class DynamicCourses {
 				Pattern p = Pattern.compile("^.+([0-9].[0-9][0-9][0-9])\\sCredits.*");
 				
 				for (int j = 0; j < coursesOffered.size()/2; j++) {
+					
+					if(context.isCancelled()){
+						
+						this.loaded = false;
+						return false;
+					}
 					
 					// New course
 					Course currentCourse = new Course();

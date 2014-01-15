@@ -121,7 +121,7 @@
 			     	android:id="@+id/loadMoreButton"
 			     	android:layout_width="match_parent"
 			     	android:layout_height="34dp"
-			     	android:background="@layout/custom_button"
+			     	android:background="@layout/rounded_button"
 			     	android:text="Load more"
 			     	android:textColor="#FFFFFF"
 			     	android:onClick="loadMoreLibrary"

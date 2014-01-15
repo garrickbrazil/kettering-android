@@ -1,5 +1,6 @@
 package com.ku.ketteringapplication;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +10,9 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 /********************************************************************
  * Class: Events
@@ -57,6 +61,19 @@ public class Events {
 		catch(Exception e) {this.events = new ArrayList<EventDay>(); this.isLoaded = false; return false; }
 	}
 	
+	
+	public static Bitmap loadBitmap(String url) {
+		
+		String urldisplay = url;
+        Bitmap mIcon11 = null;
+        try {
+            InputStream in = new java.net.URL(urldisplay).openStream();
+            mIcon11 = BitmapFactory.decodeStream(in);
+        } catch (Exception e) { e.printStackTrace(); }
+        return mIcon11;
+	}
+	
+	
 	/********************************************************************
 	 * Method: storeEvents
 	 * Purpose: takes in an list of links and stores them into memory
@@ -91,6 +108,12 @@ public class Events {
 						String dayOfWeek = event.getElementsByClass("dow").get(0).text();
 						boolean isValidImage = !img.attr("src").equals("/sites/all/themes/kettering/images/events/default_event_icon.jpg");
 						
+						Bitmap image;
+						
+						if(isValidImage){
+							image = loadBitmap(img.attr("src"));
+							currentEvent.setBitmap(image);
+						}
 						int month = 0;
 						
 						for (int i = 0; i < months.length; i++)  if(monthStr.equalsIgnoreCase(months[i])){ month = i; break; }
@@ -288,9 +311,11 @@ class Event{
 	private String info;
 	private String img;
 	private boolean isValidImage;	
+	private Bitmap bitmap;
 	
 	public Event(){
-		
+	
+		this.bitmap = null;
 		this.summary = "";
 		this.uid = "";
 		this.description = "";
@@ -309,7 +334,7 @@ class Event{
 		this.isLoaded = false;
 		this.isValidImage = false;
 	}
-	
+
 	/********************************************************************
 	 * Method: toString
 	 * Purpose: format object into a string
@@ -346,6 +371,7 @@ class Event{
 	public String getInfo() { return this.info; }
 	public String getImg() { return this.img; }
 	public boolean getIsValidImg() { return this.isValidImage; }
+	public Bitmap getBitmap() { return this.bitmap; }
 	
 	
 	/********************************************************************
@@ -370,6 +396,7 @@ class Event{
 	public void setInfo(String info){ this.info = info; }
 	public void setImg(String img) { this.img = img; }
 	public void setIsValidImage(boolean isValidImage){ this.isValidImage = isValidImage; }
+	public void setBitmap(Bitmap image) { this.bitmap = image; }
 	
 }
 

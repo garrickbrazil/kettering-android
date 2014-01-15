@@ -129,7 +129,7 @@
  	    android:layout_marginBottom="10dp"
  	    android:layout_marginLeft="10dp"
  	    android:layout_marginRight="10dp"
- 	    android:background="@layout/custom_button"
+ 	    android:background="@layout/rounded_button"
  	    android:onClick="viewSchedulePermutations"
  	    android:gravity="center"
  	    android:layout_alignParentBottom="true"

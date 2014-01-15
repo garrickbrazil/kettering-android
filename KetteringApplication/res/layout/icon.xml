@@ -1,20 +1,20 @@
 <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="48dp"
-	android:layout_height="68dp"
-	android:orientation="vertical"
-	android:clickable="true"
-	android:gravity="center_horizontal" >
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="48dp"
+        android:layout_height="68dp"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:gravity="center_horizontal" >
     
     <ImageView
-        android:contentDescription="@string/icon"
+        android:contentDescription="@string/iconCD"
         android:id="@+id/image"
         android:layout_width="match_parent" 
         android:layout_height="48dp" >
     </ImageView>
 
-	<TextView
-	    android:textIsSelectable="false"
+        <TextView
+            android:textIsSelectable="false"
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="20dp"

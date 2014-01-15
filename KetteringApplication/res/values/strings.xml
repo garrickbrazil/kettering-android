@@ -10,7 +10,11 @@
     <string name="passwordHint">Password</string>
     <string name="scheduleRow">15px</string>
     <string name="scheduleRowHeader">20dp</string>
-    <string name="icon">Icon</string>
+    <string name="iconCD">Icon</string>
+    <string name="backCD">Go Back</string>
+    <string name="homeCD">Go to Home</string>
+    <string name="eventsTitle">Campus Events</string>
+    <string name="loadMessage">Load More</string>
     
     <string name="search_type_prompt">Type</string>
     <string-array name="search_options">

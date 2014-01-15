@@ -6,8 +6,7 @@
     android:orientation="vertical"
     android:background="@drawable/blue_grid_edit" >
     
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
 	    android:layout_weight="12"
@@ -34,16 +33,14 @@
 		android:textStyle="bold|italic">
      </TextView>
     </LinearLayout>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="88"
     android:orientation="vertical" >
     
     
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:gravity="left"
@@ -52,7 +49,7 @@
     
 
 	
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView 
 	  	android:id="@+id/newsScroll"
 	  	android:layout_width="fill_parent"
 	   	android:layout_gravity="center_vertical"
@@ -61,13 +58,11 @@
 	   	android:gravity="left" >
 	   	
 		<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical" >
         	
 		    <LinearLayout
-				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:id="@+id/newsContainer"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -75,7 +70,6 @@
 				
 		    </LinearLayout>
 		    <LinearLayout
-				xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@color/odd"
@@ -85,7 +79,7 @@
 			     	android:id="@+id/loadMoreButton"
 			     	android:layout_width="match_parent"
 			     	android:layout_height="34dp"
-			     	android:background="@layout/custom_button"
+			     	android:background="@layout/rounded_button"
 			     	android:text="Load more"
 			     	android:textColor="#FFFFFF"
 			     	android:onClick="loadMoreNews"

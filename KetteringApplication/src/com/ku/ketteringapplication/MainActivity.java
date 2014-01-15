@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -13,9 +14,11 @@ import org.jsoup.nodes.Document;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -70,6 +73,27 @@ public class MainActivity extends Activity {
 	private ViewPager schedulerPager;
 	private Spinner schedulerIndexer;
 	private int orientation;
+	private EventsTask eventTask;
+	private NewsTask newsTask;
+	private TransferTask transferTask;
+	private DirectoryTask directoryTask;
+	private NewsArticleTask newsArticleTask;
+	private NewsPageTask newsPageTask;
+	private LibraryPageTask libraryPageTask;
+	private LibraryTask libraryTask;
+	private GradeSingleTask gradeSingleTask;
+	private GradesTask gradesTask;
+	private FinalMidtermRetrival finalMidtermRetrival;
+	private CourseSchedulerTask courseSchedulerTask;
+	private AccountTask accountTask;
+	private ScheduleTask scheduleTask;
+	private TransferSearchTask transferSearchTask;
+	private ViewScheduleTask viewScheduleTask;
+	private EventsPageTask eventsPageTask;
+	private EventsTask eventsTask;
+	private StoreScheduleTermTask storeScheduleTermTask;
+	private EventArticleTask eventArticleTask;
+	private Login login;
 	
 	// Functions
 	private Icon[] icons_all;
@@ -106,6 +130,34 @@ public class MainActivity extends Activity {
         this.load_dialog.setIndeterminate(true);
         this.load_dialog.setTitle("In progress");
         this.load_dialog.setMessage("Loading...");
+        this.load_dialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+        {
+            @Override
+            public void onCancel(DialogInterface dialog)
+            {
+				if(eventTask != null) eventTask.cancel(true);
+				if(newsTask != null) newsTask.cancel(true);
+				if(transferTask != null) transferTask.cancel(true);
+				if(directoryTask != null) directoryTask.cancel(true);
+				if(newsArticleTask != null) newsArticleTask.cancel(true);
+				if(newsPageTask != null) newsPageTask.cancel(true);
+				if(libraryPageTask != null) libraryPageTask.cancel(true);
+				if(libraryTask != null) libraryTask.cancel(true);
+				if(gradeSingleTask != null) gradeSingleTask.cancel(true);
+				if(gradesTask != null) gradesTask.cancel(true);
+				if(finalMidtermRetrival != null) finalMidtermRetrival.cancel(true);
+				if(courseSchedulerTask != null) courseSchedulerTask.cancel(true);
+				if(accountTask != null) accountTask.cancel(true);
+				if(scheduleTask != null) scheduleTask.cancel(true);
+				if(transferSearchTask != null) transferSearchTask.cancel(true);
+				if(viewScheduleTask != null) viewScheduleTask.cancel(true);
+				if(eventsPageTask != null) eventsPageTask.cancel(true);
+				if(eventsTask != null) eventsTask.cancel(true);
+				if(storeScheduleTermTask != null) storeScheduleTermTask.cancel(true);
+				if(eventArticleTask != null) eventArticleTask.cancel(true);
+				if(login != null) login.cancel(true);
+            }
+        });
         
         // Setup icons for the grid
         Icon events = new Icon("Events", drawable.events, events_listener);
@@ -142,6 +194,11 @@ public class MainActivity extends Activity {
     }
     
 
+    public void cancel(){
+    	
+    	
+    }
+    
 	/********************************************************************
 	 * Method: onCreateOptionsMenu
 	 * Purpose: method to inflate options menu 
@@ -167,8 +224,8 @@ public class MainActivity extends Activity {
     	
     		// Move to latest state 
 	    	//if(last.equals(MENU)) new KUMenuTask().execute(ku_menu); 
-	    	if (last.equals(EVENTS)) new EventsTask().execute(events);
-	    	else if (last.equals(NEWS)) new NewsTask().execute(news);
+	    	if (last.equals(EVENTS)) eventTask = (EventsTask) new EventsTask().execute(events);
+	    	else if (last.equals(NEWS)) newsTask = (NewsTask) new NewsTask().execute(news);
 	    	else if (last.equals(DIRECTORY)){ setContentView(R.layout.directory); populateSearch(); }
 	    	else if (last.equals(LIBRARY)){ setContentView(R.layout.library); populateLibrary(); }
 	    	else if (last.equals(GRADES)){ setContentView(R.layout.grades); populateGrades(); }
@@ -197,7 +254,7 @@ public class MainActivity extends Activity {
     	public void onClick(View v) {
     		
     		last_view.add(0, HOME); 
-    		new EventsTask().execute(events); 
+    		eventTask = (EventsTask) new EventsTask().execute(events); 
     	} 
     };
     
@@ -207,7 +264,8 @@ public class MainActivity extends Activity {
     	public void onClick(View v) { 
     		
     		last_view.add(0, HOME); 
-    		new NewsTask().execute(news); 
+    		
+    		newsTask = (NewsTask) new NewsTask().execute(news); 
     	} 
     };
     
@@ -217,7 +275,7 @@ public class MainActivity extends Activity {
     	public void onClick(View v) { 
     		
     		last_view.add(0, HOME); 
-    		new TransferTask().execute(trans_dir); 
+    		transferTask = (TransferTask) new TransferTask().execute(trans_dir); 
     	} 
     };
     
@@ -258,7 +316,7 @@ public class MainActivity extends Activity {
     private OnClickListener schedule_listener = new OnClickListener() {
     	public void onClick(View v) { 
     		
-    		new ScheduleTask().execute(student);
+    		scheduleTask = (ScheduleTask) new ScheduleTask().execute(student);
     	} 
     };
     
@@ -266,7 +324,7 @@ public class MainActivity extends Activity {
     private OnClickListener scheduler_listener = new OnClickListener() { 
     	public void onClick(View v) { 
     	
-    		new CourseSchedulerTask().execute(scheduler);
+    		courseSchedulerTask = (CourseSchedulerTask) new CourseSchedulerTask().execute(scheduler);
     	} 
     };
     
@@ -276,7 +334,7 @@ public class MainActivity extends Activity {
     	public void onClick(View v) { 
     
     		last_view.add(0, HOME);
-    		new AccountTask().execute(student);
+    		accountTask = (AccountTask) new AccountTask().execute(student);
     	} 
     };
     
@@ -286,7 +344,7 @@ public class MainActivity extends Activity {
     	public void onClick(View v) { 
     		
     		last_view.add(0, HOME);
-    		new GradesTask().execute(student);
+    		gradesTask = (GradesTask) new GradesTask().execute(student);
     	} 
     };    
     
@@ -296,6 +354,10 @@ public class MainActivity extends Activity {
     	
     }
     
+    public void homeScreen(View v){
+    	last_view = new ArrayList<String>();
+    	homeScreen();
+    }
     
     /********************************************************************
      * Method: homeScreen
@@ -319,7 +381,7 @@ public class MainActivity extends Activity {
     		ViewGroup.MarginLayoutParams gridParams = (ViewGroup.MarginLayoutParams) grid.getLayoutParams();
 			
 			// Show functions
-			grid.setAdapter(new ImageAdapter(getApplicationContext(), this.icons_all));
+			grid.setAdapter(new IconAdapter(getApplicationContext(), this.icons_all));
 
 			// Show & hide
 			signinField.setVisibility(View.GONE);
@@ -341,7 +403,7 @@ public class MainActivity extends Activity {
     		ViewGroup.MarginLayoutParams gridParams = (ViewGroup.MarginLayoutParams) grid.getLayoutParams();
     					
             // Show functions
-            grid.setAdapter(new ImageAdapter(this, this.icons_glob));
+            grid.setAdapter(new IconAdapter(this, this.icons_glob));
             
             // Show & hide
             signinField.setVisibility(View.VISIBLE);
@@ -388,14 +450,14 @@ public class MainActivity extends Activity {
      * Method: searchTransfer
      * Purpose: searches a transfer
     /*******************************************************************/
-    public void searchTransfer(View view){ new TransferSearchTask().execute(this.trans_dir); }
+    public void searchTransfer(View view){ transferSearchTask = (TransferSearchTask) new TransferSearchTask().execute(this.trans_dir); }
     
     
     /********************************************************************
      * Method: displayFinalMidtermGrades
      * Purpose: searches a transfer
     /*******************************************************************/
-    public void displayFinalMidtermGrades(View view){ new FinalMidtermRetrival().execute(this.student); }
+    public void displayFinalMidtermGrades(View view){ finalMidtermRetrival = (FinalMidtermRetrival) new FinalMidtermRetrival().execute(this.student); }
     
     
     /********************************************************************
@@ -410,7 +472,7 @@ public class MainActivity extends Activity {
     	else if(gradeButton.getText().equals("Final")) this.student.setGradesPage(1);
     	else if(gradeButton.getText().equals("Midterm")) this.student.setGradesPage(2);
     	
-    	new GradesTask().execute(student);
+    	gradesTask = (GradesTask) new GradesTask().execute(student);
     }
     
     
@@ -462,7 +524,7 @@ public class MainActivity extends Activity {
         				String index = indexView.getText().toString();
         				String[] params = {index};
         				
-        				new GradeSingleTask().execute(params);
+        				gradeSingleTask = (GradeSingleTask) new GradeSingleTask().execute(params);
                     }
                 });
     			
@@ -484,7 +546,7 @@ public class MainActivity extends Activity {
         	selectList.setSelection(student.getFinalSelectedTerm(), true);
         	
     		
-    		new FinalMidtermRetrival().execute(this.student);
+    		finalMidtermRetrival = (FinalMidtermRetrival) new FinalMidtermRetrival().execute(this.student);
     	}
     	
     	else if(this.student.getGradesPage() == 1 && this.student.getFinalSelectedTerm() != -1){
@@ -533,7 +595,7 @@ public class MainActivity extends Activity {
         	selectList.setSelection(student.getMidtermSelectedTerm(), true);
         
     		
-    		new FinalMidtermRetrival().execute(this.student);
+    		finalMidtermRetrival = (FinalMidtermRetrival) new FinalMidtermRetrival().execute(this.student);
     	}
     	
     	else if(this.student.getGradesPage() == 2 && this.student.getMidtermSelectedTerm() != -1){
@@ -840,7 +902,8 @@ public class MainActivity extends Activity {
      * Method: populateEvents
      * Purpose: populates current events into view
     /*******************************************************************/
-    public void populateEvents(){
+    @SuppressWarnings("deprecation")
+	public void populateEvents(){
     	
     	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	LinearLayout eventsContainer = (LinearLayout) findViewById(R.id.eventsContainer);
@@ -865,21 +928,28 @@ public class MainActivity extends Activity {
 
     		// All Events
     		for(int count = 0; count < eventDay.getEvents().size(); count++){
+    			LinearLayout spacer = (LinearLayout) inflater.inflate(R.layout.spacer, null);
     			
     			Event event = eventDay.getEvents().get(count);
-    			View eventView = inflater.inflate(R.layout.event, null);
+    			RelativeLayout eventView = (RelativeLayout) inflater.inflate(R.layout.event, null);
     	
 	        	// Elements
 	        	TextView summary = (TextView) eventView.findViewById(R.id.summary);
-	        	TextView time = (TextView) eventView.findViewById(R.id.time);
-	        	TextView link = (TextView) eventView.findViewById(R.id.link);
 	        	TextView index = (TextView) eventView.findViewById(R.id.index);
 	        	TextView indexDay = (TextView) eventView.findViewById(R.id.indexDay);
-	        	WebView img = (WebView) eventView.findViewById(R.id.image);
+	        	TextView info = (TextView) eventView.findViewById(R.id.info);
+	        	TextView link = (TextView) eventView.findViewById(R.id.link);
+	        	ImageView img = (ImageView) eventView.findViewById(R.id.image);
+	        	//img.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 	        	
-
 	        	if(event.getSummary() != null && event.getDescription() != null) {
 
+	        		//img.setImageDrawable(new BitmapDrawable(event.getBitmap()));
+	        		if(event.getIsValidImg())
+	        			img.setImageBitmap(event.getBitmap());
+	        		else
+	        			img.setImageResource(R.drawable.blank);
+	        		
 	        		// Event click
 	        		eventView.setOnClickListener(new OnClickListener() {        
 	        			public void onClick(View v) {
@@ -895,32 +965,47 @@ public class MainActivity extends Activity {
 	        				String indexDay = indexDayView.getText().toString(); 
 	        				String[] params = {link, index, indexDay};
 	        				
-	        				new EventArticleTask().execute(params);
+	        				eventArticleTask = (EventArticleTask) new EventArticleTask().execute(params);
 	                    }
 	                });
 
 	        		
+	        		/*
 	        		// Hide (All Day)
 	        		if(event.getInfo().equals("(All day)")){
 	        			
 	        			LinearLayout.LayoutParams params = (LayoutParams) summary.getLayoutParams();
-	        			time.setVisibility(View.GONE);
+	        			info.setVisibility(View.INVISIBLE);
 	        			params.setMargins(8,18,8,18);
 	        			summary.setLayoutParams(params);
 	        		}
 	        		
-	        		
+	        		if(!event.getIsValidImg() && false){
+	        			img.setVisibility(View.GONE);
+	        			imgDef.setVisibility(View.VISIBLE);
+	        		}
+	        		else{
+	        			img.setVisibility(View.VISIBLE);
+	        			imgDef.setVisibility(View.GONE);
+	        		}
+	        		*/
 	        		// Fields
-	        		img.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#7F95FA\">" + event.getImg() + "</body>", "text/html", null, null);
-	        		img.setHorizontalFadingEdgeEnabled(false);
-	        		img.setVerticalScrollBarEnabled(false);
+	        		//img.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#7F95FA\">" + event.getImg() + "</body>", "text/html", null, null);
+	        		//img.setHorizontalFadingEdgeEnabled(false);
+	        		//img.setVerticalScrollBarEnabled(false);
+	        		String temp[] = event.getInfo().split(Pattern.quote("|"));
+	        		
 	        		summary.setText(event.getSummary());
 	        		indexDay.setText(countDay + "");
 	        		index.setText(count + "");
-	        		time.setText(event.getInfo());
-	        		link.setText(event.getLink());
+	        		//if((temp.length < 2))
+	        			info.setText("Time: " + temp[0]);
+	        		//else 
+	        			//info.setText("Time: " + temp[0] + "\n" + "Location: " + temp[1]);
 	        		
+	        		link.setText(event.getLink());
 	        		eventsContainer.addView(eventView);
+	        		eventsContainer.addView(spacer);
 	        	}        
     		}
     	}	
@@ -1155,7 +1240,7 @@ public class MainActivity extends Activity {
     				String index = indexView.getText().toString();
     				String[] params = {link, index};
     				
-    				new NewsArticleTask().execute(params);
+    				newsArticleTask = (NewsArticleTask) new NewsArticleTask().execute(params);
                 }
             });
     		
@@ -1215,21 +1300,21 @@ public class MainActivity extends Activity {
      * Method: loadMoreLibrary
      * Purpose: loads next page of events
     /*******************************************************************/
-    public void loadMoreLibrary(View view){ new LibraryPageTask().execute(lib); }
+    public void loadMoreLibrary(View view){ libraryPageTask = (LibraryPageTask) new LibraryPageTask().execute(lib); }
     
     
     /********************************************************************
      * Method: loadMoreEvents
      * Purpose: loads next page of events
     /*******************************************************************/
-    public void loadMoreEvents(View view){ new EventsPageTask().execute(events); }
+    public void loadMoreEvents(View view){ eventsPageTask = (EventsPageTask) new EventsPageTask().execute(events); }
     
     
     /********************************************************************
      * Method: loadMoreNews
      * Purpose: loads next page of events
     /*******************************************************************/
-    public void loadMoreNews(View view){ new NewsPageTask().execute(news); }
+    public void loadMoreNews(View view){ newsPageTask = (NewsPageTask) new NewsPageTask().execute(news); }
 
     
 
@@ -1237,7 +1322,7 @@ public class MainActivity extends Activity {
      * Method: signIn
      * Purpose: sign user into banner and blackboard connections
     /*******************************************************************/
-    public void signIn(View view){ new Login().execute(this.student); }
+    public void signIn(View view){ login = (Login) new Login().execute(this.student); }
     
     
     /********************************************************************
@@ -1256,14 +1341,14 @@ public class MainActivity extends Activity {
      * Method: search
      * Purpose: searches for faculty / students
     /*******************************************************************/
-    public void search(View v){ new DirectoryTask().execute(dir); }
+    public void search(View v){ directoryTask = (DirectoryTask) new DirectoryTask().execute(dir); }
     
 
     /********************************************************************
      * Method: storeSchedulerTerm
      * Purpose: stores a scheulders new term data
     /*******************************************************************/
-    public void storeSchedulerTerm(View v){ new StoreScheduleTermTask().execute(scheduler); }
+    public void storeSchedulerTerm(View v){ storeScheduleTermTask = (StoreScheduleTermTask) new StoreScheduleTermTask().execute(scheduler); }
     
     /********************************************************************
      * Method: storeSchedulerTerm
@@ -1272,7 +1357,7 @@ public class MainActivity extends Activity {
     public void viewSchedulePermutations(View v){ 
     	
     	this.last_view.add(0, SCHEDULER);
-    	new ViewScheduleTask().execute(scheduler);
+    	viewScheduleTask = (ViewScheduleTask) new ViewScheduleTask().execute(scheduler);
     	
     	/*
     	// Calculate scheduler permutations
@@ -1483,7 +1568,7 @@ public class MainActivity extends Activity {
     	((LinearLayout) findViewById(R.id.libraryContainer)).removeAllViews();
     	((Button) findViewById(R.id.loadMoreButton)).setVisibility(View.GONE);
 		
-    	new LibraryTask().execute(lib);
+    	libraryTask = (LibraryTask) new LibraryTask().execute(lib);
     }
     
     
@@ -1903,7 +1988,7 @@ public class MainActivity extends Activity {
      * Task: EventsTask
      * Purpose: task to store events
     /*******************************************************************/
-    private class EventsTask extends AsyncTask<Events, Void, Boolean> {
+    private class EventsTask extends AsyncTask<Events, Void, Boolean>{
     	
     	@Override
         protected Boolean doInBackground(Events... events) {  
@@ -1913,10 +1998,11 @@ public class MainActivity extends Activity {
     		else return events[0].store();
         }      
 
+    	
         @Override
         protected void onPostExecute(Boolean success) {
         	
-        	if(success){
+        	if(success && !isCancelled()){
 	        	
         		// Show
         		setContentView(R.layout.events);
@@ -1927,11 +2013,12 @@ public class MainActivity extends Activity {
 		}
 
         @Override
-        protected void onPreExecute() { load_dialog.show(); }
+        protected void onPreExecute() { 
+        	load_dialog.show(); 
+        }
 
         @Override
         protected void onProgressUpdate(Void... values) { }
-        
     }
     
     /********************************************************************
@@ -2013,7 +2100,7 @@ public class MainActivity extends Activity {
      * Task: StoreScheduleTermTask
      * Purpose: task to load terms 
     /*******************************************************************/
-    private class StoreScheduleTermTask extends AsyncTask<DynamicCourses, Void, Boolean> {
+    public class StoreScheduleTermTask extends AsyncTask<DynamicCourses, Void, Boolean> {
     	
         protected Boolean doInBackground(DynamicCourses... scheduler) {  
     		
@@ -2022,7 +2109,7 @@ public class MainActivity extends Activity {
         	
     		// Load
     		scheduler[0].setTerm(termSpin.getSelectedItemPosition());
-    		return scheduler[0].storeDynamicCourses();
+    		return scheduler[0].storeDynamicCourses(this);
         }      
 
         protected void onPostExecute(Boolean success) {
