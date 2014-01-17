@@ -18,7 +18,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -41,7 +40,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -389,6 +387,7 @@ public class MainActivity extends Activity {
 			signinButton.setVisibility(View.GONE);
 			signoutButton.setVisibility(View.VISIBLE);
 			
+			// Convert to DIP
 			gridParams.bottomMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 44, getResources().getDisplayMetrics());
 
 			// Adjust weight
@@ -902,7 +901,6 @@ public class MainActivity extends Activity {
      * Method: populateEvents
      * Purpose: populates current events into view
     /*******************************************************************/
-    @SuppressWarnings("deprecation")
 	public void populateEvents(){
     	
     	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
@@ -2260,6 +2258,7 @@ public class MainActivity extends Activity {
     	        schedulerIndexer.setAdapter(spinnerAdapter);
     	        
     	        SchedulerPagerAdapter adapter = new SchedulerPagerAdapter(workingSchedules, latestTimes, earliestTimes);
+    	        adapter.setContext(c);
     	    	
     	        schedulerPager = (ViewPager) findViewById(R.id.schedulerPager);
     	        schedulerPager.setOnPageChangeListener(new OnPageChangeListener() {
@@ -2574,19 +2573,20 @@ class SchedulerPagerAdapter extends PagerAdapter {
 	int[] latestTimes;
 	int[] earliestTimes;
 	ViewPager schedluerPager;
+	Context c;
 	//Scheduler c;
 	
 	// Constants
-	final int ROWSIZE = 5;
+	int ROWSIZE =  5;
 	final String[] COLORS = {"#FFDEAD", "#87CEEB","#8FBC8F", 
 			"#F0E68C", "#FFC0CB", "#D8BFD8", "#BFEFFF", "#C1FFC1", "#BCEE68", "#FFEC8B"};
 	boolean creation = false;
-	/*
-	public void setContext (ViewPager schedulerPager, Scheduler scheduler){
-		this.schedluerPager = schedulerPager;
-		this.c = scheduler;
+	
+	public void setContext (Context c){
+		this.c = c;
+		ROWSIZE=(int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, c.getResources().getDisplayMetrics());
 	}
-	*/
+	
 	public SchedulerPagerAdapter(List<List<Course>> workingCourses, int[] latestTimes, int[] earliestTimes){
 		
 		this.workingCourses = workingCourses;

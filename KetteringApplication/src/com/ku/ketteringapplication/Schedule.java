@@ -11,6 +11,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,7 +34,7 @@ public class Schedule extends Activity{
 	private LayoutInflater inflater;
 	
 	// Constants
-	private final int ROWSIZE = 5;
+	private int ROWSIZE = 5;
 	private final String[] COLORS = {"#FFDEAD", "#87CEEB","#8FBC8F", 
 			"#F0E68C", "#FFC0CB", "#D8BFD8", "#BFEFFF", "#C1FFC1", "#BCEE68", "#FFEC8B"};
 	
@@ -50,6 +51,7 @@ public class Schedule extends Activity{
 	    Gson gson = new Gson();
 	    int latestTime = 8;
 	    
+	    ROWSIZE = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
 	    
 	    // Clear courses
 	    this.courses = new ArrayList<Course>();
