@@ -1,55 +1,48 @@
-   <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:shrinkColumns="*"
-    android:stretchColumns="*"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
     android:layout_marginLeft="20dp"
    	android:layout_marginBottom="5dp"
    	android:layout_marginRight="20dp" >
+ 	<TextView
+  		android:id="@+id/className"
+  		android:layout_centerVertical="true"
+  		android:visibility="gone"
+  		android:singleLine="true"
+  		android:layout_width="0dp"
+  		android:layout_height="0dp"
+        android:ellipsize="end"
+  		android:textColor="#000000"
+        android:textSize="14sp"
+	    android:gravity="left">
+	</TextView>
+	<TextView
+	    android:id="@+id/classTitle"
+	    android:layout_centerVertical="true"
+	    android:textColor="#000000"
+	    android:singleLine="true"
+	    android:ellipsize="end"
+	    android:textSize="14sp"
+	    android:gravity="center_vertical|left"
+	    android:layout_height="36dp"
+	    android:layout_width="match_parent"
+	    android:layout_marginRight="26dp" >
+	</TextView>
+	<ImageView
+	   	android:contentDescription="@string/deleteCD"
+	   	android:layout_centerVertical="true"
+	    android:id="@+id/removeClass"
+	    android:layout_alignParentRight="true"
+	    android:layout_width="24dp"
+	    android:layout_height="24dp"
+	    android:clickable="true"	       
+	    android:src="@drawable/minus" >
+	</ImageView>
     
- 		
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent" >
-		<TextView
-  		    android:id="@+id/courseNumber"
-  		    android:textColor="#000000"
-            android:textSize="14dp"
-            android:gravity="left"
-            android:layout_span="12"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="10dp"
-    		android:layout_marginBottom="10dp" >
-        </TextView>
-  		
-		<TextView
-  		    android:id="@+id/className"
-  		    android:textColor="#000000"
-            android:textSize="14dp"
-            android:gravity="left"
-            android:layout_span="12"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="10dp"
-    		android:layout_marginBottom="10dp" >
-        </TextView>
-  		<ImageView
-	       android:id="@+id/removeClass"
-	       android:layout_width="0dp"
-	       android:layout_weight="6" 
-	       android:layout_height="match_parent"
-	       android:layout_marginRight="10dp"
-	       android:clickable="true"
-	       
-	       android:src="@drawable/minus" >
-	   </ImageView>
-    </TableRow>
     <View 
 	    android:layout_height="1dp"
 	   	android:layout_width="match_parent"
+	   	android:layout_alignParentBottom="true"
 	   	android:background="@color/even" >
 	</View>
-</TableLayout>
-
-     
+</RelativeLayout>

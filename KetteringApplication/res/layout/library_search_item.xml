@@ -9,9 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dp"
-   		android:layout_marginRight="10dp" 
-        android:background="@layout/table_odd_top">
+        android:background="@color/odd">
   	             
 		<TextView
 	        android:id="@+id/title"
@@ -25,7 +23,7 @@
 	        android:gravity="center"
 	        android:textColor="@color/tableFontColor"
 	        android:textStyle="bold"
-	        android:textSize="16dp" >
+	        android:textSize="16sp" >
      	</TextView>
     </TableRow>
  	
@@ -34,14 +32,12 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:gravity="center_horizontal"
-	    android:layout_marginLeft="10dp"
-		android:layout_marginRight="10dp" 
-	    android:background="@color/even" >
+	    android:background="@color/odd" >
 		<TextView
 		    android:text="Author"
 		    android:layout_marginLeft="10dp"
             android:textStyle="bold"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:layout_marginTop="2dp"
 	        android:layout_marginBottom="2dp"
             android:textColor="@color/tableFontColor"
@@ -58,7 +54,7 @@
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
             android:gravity="left"
-            android:textSize="14dp" >
+            android:textSize="14sp" >
         </TextView>
     </TableRow>
  	
@@ -67,16 +63,14 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:gravity="center_horizontal"
-	    android:layout_marginLeft="10dp"
-		android:layout_marginRight="10dp" 
-	    android:background="@color/even" >
+	    android:background="@color/odd" >
 		<TextView
 		    android:text="Call Numer"
             android:textStyle="bold"
             android:layout_marginTop="2dp"
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:textColor="@color/tableFontColor"
             android:gravity="left" >
         </TextView>
@@ -91,7 +85,7 @@
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
             android:gravity="left"
-            android:textSize="14dp" >
+            android:textSize="14sp" >
         </TextView>
     </TableRow>
     
@@ -100,13 +94,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dp"
-   		android:layout_marginRight="10dp" 
-        android:background="@color/even" >
+        android:background="@color/odd" >
 		<TextView
             android:text="Publisher"
             android:textStyle="bold"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:layout_marginTop="2dp"
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
@@ -124,7 +116,7 @@
             android:textColor="@color/tableFontColor"
             android:layout_span="10"
             android:gravity="left"
-            android:textSize="14dp" >
+            android:textSize="14sp" >
         </TextView>
     </TableRow>
     
@@ -133,13 +125,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dp"
-   		android:layout_marginRight="10dp" 
-        android:background="@color/even" >
+        android:background="@color/odd" >
 		<TextView
             android:text="Edition"
             android:textStyle="bold"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:layout_marginTop="2dp"
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
@@ -157,7 +147,7 @@
             android:textColor="@color/tableFontColor"
             android:layout_span="10"
             android:gravity="left"
-            android:textSize="14dp" >
+            android:textSize="14sp" >
         </TextView>
     </TableRow>
     
@@ -166,13 +156,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dp"
-   		android:layout_marginRight="10dp"
-        android:background="@color/even" >
+        android:background="@color/odd" >
 		<TextView
             android:text="Published Date"
             android:textStyle="bold"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:layout_marginTop="2dp"
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
@@ -190,7 +178,7 @@
             android:textColor="@color/tableFontColor"
             android:layout_span="10"
             android:gravity="left"
-            android:textSize="14dp" >
+            android:textSize="14sp" >
         </TextView>
     </TableRow>
     
@@ -199,14 +187,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginLeft="10dp"
-   		android:layout_marginRight="10dp"
-   		android:layout_marginBottom="18dp" 
-        android:background="@layout/table_even_bottom" >
+        android:background="@color/odd" >
 		<TextView
             android:text="Availability"
             android:textStyle="bold"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:layout_marginTop="2dp"
 	        android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
@@ -224,7 +209,7 @@
             android:textColor="@color/tableFontColor"
             android:layout_span="10"
             android:gravity="left"
-            android:textSize="14dp" >
+            android:textSize="14sp" >
         </TextView>
     </TableRow>
  </TableLayout>

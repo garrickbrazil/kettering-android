@@ -1,3 +1,20 @@
+/*
+ 	This file is part of KetteringApplication.
+
+	KetteringApplication is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    KetteringApplication is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with KetteringApplication.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.ku.ketteringapplication;
 
 import java.util.ArrayList;
@@ -18,6 +35,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -99,9 +117,10 @@ public class MainActivity extends Activity {
 	
 	
 	// Constants
-	private final String bg_color = "#7F95FA", HOME = "HOME", 
+	private final String HOME = "HOME", 
 			EVENTS = "EVENTS", NEWS = "NEWS", DIRECTORY = "DIRECTORY", 
-			LIBRARY = "LIBRARY", GRADES = "GRADES", SCHEDULER = "SCHEDULER";
+			LIBRARY = "LIBRARY", GRADES = "GRADES", SCHEDULER = "SCHEDULER",
+			BG_WEB_COLOR = "7092d8";
 	
 	/********************************************************************
 	 * Method: onCreate
@@ -180,14 +199,15 @@ public class MainActivity extends Activity {
         homeScreen();
         this.orientation = getRequestedOrientation();
         
-        //EditText login = (EditText) findViewById(R.id.signinField);
-        //EditText pass = (EditText) findViewById(R.id.passwordField);
+        /*
+        EditText login = (EditText) findViewById(R.id.signinField);
+        EditText pass = (EditText) findViewById(R.id.passwordField);
         
-        //login.setText("");
-        //pass.setText("");
+        login.setText("");
+        pass.setText("");
         
-        //new Login().execute(this.student);
-        
+        new Login().execute(this.student);
+        */
         
     }
     
@@ -692,10 +712,23 @@ public class MainActivity extends Activity {
     /*******************************************************************/
     public void populateScheduler(){
     
+    	List<String> courseNamesAndIDs = new ArrayList<String>();
+    	
+    	for(int i = 0; i < this.scheduler.getDynamicCourseIDs().size(); i++){
+    		
+    		String courseID = this.scheduler.getDynamicCourseIDs().get(i);
+    		
+    		if(i < scheduler.getDynamicCourseNames().size()){
+    			courseNamesAndIDs.add(courseID + ":  " + this.scheduler.getDynamicCourseNames().get(i));
+    		}
+    		else{
+    			courseNamesAndIDs.add(courseID);
+    		}
+    	}
     	
     	// Elements
     	ArrayAdapter<String> termsAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, this.scheduler.getTermsName());
-    	ArrayAdapter<String> classesAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, this.scheduler.getDynamicCourseIDs());
+    	ArrayAdapter<String> classesAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, courseNamesAndIDs);
     	Spinner termsList = (Spinner) findViewById(R.id.terms);
     	Spinner classesList = (Spinner) findViewById(R.id.classes);
     	LinearLayout container = (LinearLayout) findViewById(R.id.classContainer);
@@ -707,7 +740,7 @@ public class MainActivity extends Activity {
     	
     	if(!scheduler.getLoaded()){
     		classesList.setEnabled(false);
-    		((LinearLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(false);
+    		((RelativeLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(false);
     		view.setEnabled(true);
     		//view.setEnabled(false);
     	}
@@ -716,7 +749,7 @@ public class MainActivity extends Activity {
 	    	
     		termsList.setSelection(scheduler.getTermIndex());
     		classesList.setEnabled(true);
-    		((LinearLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(true);
+    		((RelativeLayout) classesList.getParent()).findViewById(R.id.addClasses).setEnabled(true);
     		
     		view.setEnabled(true);
     		//view.setEnabled(this.scheduler.getCurrentCourseList().size() > 0);
@@ -724,25 +757,31 @@ public class MainActivity extends Activity {
 	    	for(int i = 0; i < this.scheduler.getCurrentCourseList().size(); i++){
 	    	
 	    		String current = scheduler.getCurrentCourseList().get(i);
+	    		String courseTitle = "";
 	    		
-	    		TableLayout classCont = (TableLayout) inflater.inflate(R.layout.scheduler_class, null);
+	    		RelativeLayout classCont = (RelativeLayout) inflater.inflate(R.layout.scheduler_class, null);
 	    		TextView className = (TextView) classCont.findViewById(R.id.className);
-	    		TextView courseNumber = (TextView) classCont.findViewById(R.id.courseNumber);
+	    		TextView classTitle = (TextView) classCont.findViewById(R.id.classTitle);
 	    		className.setText(current);
+	    		courseTitle = current;
+	    		if(this.scheduler.getDynamicCourses().get(current).size() > 0){
+	    			courseTitle = courseTitle + ":  " + this.scheduler.getDynamicCourses().get(current).get(0).getCourseName();
+	    		}
+	    		
+	    		classTitle.setText(courseTitle);
 	    		
 	    		ImageView delete = (ImageView) classCont.findViewById(R.id.removeClass);
 	        	delete.setOnClickListener(new OnClickListener(){
 	        		public void onClick(View v){
 	        		    	
-	        			LinearLayout parent = (LinearLayout) v.getParent().getParent().getParent();
-	        		    String removeID = (String) ((TextView) ((TableRow) v.getParent()).findViewById(R.id.className)).getText();
-	        		    parent.removeView((TableLayout)v.getParent().getParent());
+	        			LinearLayout parent = (LinearLayout) v.getParent().getParent();
+	        		    String removeID = (String) ((TextView) ((RelativeLayout) v.getParent()).findViewById(R.id.className)).getText();
+	        		    parent.removeView((RelativeLayout)v.getParent());
 	        		    scheduler.getCurrentCourseList().remove(removeID);	
 	        		}
 	        		
 	        	});
 	        	
-	        	courseNumber.setText("Course #" + (i + 1));
 	    		container.addView(classCont);
 	    	}
     	}
@@ -1021,7 +1060,7 @@ public class MainActivity extends Activity {
     	// Elements
     	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	LinearLayout libContainer = (LinearLayout) findViewById(R.id.libraryContainer);
-    	Button loadMoreButton = (Button) findViewById(R.id.loadMoreButton);
+    	Button loadMoreButton = (Button) inflater.inflate(R.layout.library_load_more_button, null);
     	EditText searchField = (EditText) findViewById(R.id.searchField);
     	Spinner type = (Spinner) findViewById(R.id.type);
     	
@@ -1036,17 +1075,14 @@ public class MainActivity extends Activity {
     	
     	libContainer.removeAllViews();
     	
-    	// Max page?
-    	if(lib.getPage() < lib.getMaxPage()) loadMoreButton.setVisibility(View.VISIBLE); 
-    	else loadMoreButton.setVisibility(View.GONE);
-    	
-    	
     	for(LibraryItem libItem : libList){
 			
 			if(!libItem.getTitle().replaceAll("\\s+", "").equals("") && !libItem.getHoldings().replaceAll("\\s+", "").equals("")){
     			
 				// Elements
 				TableLayout libItemView = (TableLayout) inflater.inflate(R.layout.library_search_item, null);
+				LinearLayout spacer = (LinearLayout) inflater.inflate(R.layout.spacer,null);
+				LinearLayout spacer2 = (LinearLayout) inflater.inflate(R.layout.spacer,null);
 				TableRow callNumberRow = (TableRow) libItemView.findViewById(R.id.callNumberRow);
     			TableRow publisherRow = (TableRow) libItemView.findViewById(R.id.publisherRow);
     			TableRow editionRow = (TableRow) libItemView.findViewById(R.id.editionRow);
@@ -1085,8 +1121,22 @@ public class MainActivity extends Activity {
     			else pubDateRow.setVisibility(View.GONE);
     			
     			libContainer.addView(libItemView);
+    			libContainer.addView(spacer);
+    			libContainer.addView(spacer2);
 			}		
     	}	
+    	
+    	// Max page?
+    	if(lib.getPage() < lib.getMaxPage()){
+    		libContainer.addView(loadMoreButton);
+    		loadMoreButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					libraryPageTask = (LibraryPageTask) new LibraryPageTask().execute(lib);
+				}
+			});
+    	}
     }
     
     
@@ -1207,7 +1257,8 @@ public class MainActivity extends Activity {
      * Method: populateNews
      * Purpose: populates current news into view
     /*******************************************************************/
-    public void populateNews(){
+    @SuppressWarnings("deprecation")
+	public void populateNews(){
     	
     	LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
     	LinearLayout newsContainer = (LinearLayout) findViewById(R.id.newsContainer);
@@ -1216,15 +1267,16 @@ public class MainActivity extends Activity {
     	
     	// All Days
     	for(int count = 0; count < newsList.size(); count++){
-    		
+    		LinearLayout spacer = (LinearLayout) inflater.inflate(R.layout.spacer, null);
 			View newsView = inflater.inflate(R.layout.news_item, null);
 	
         	// Elements
-			TextView authorDate = (TextView) newsView.findViewById(R.id.authorDate);
+			TextView authorDate = (TextView) newsView.findViewById(R.id.info);
 			TextView summary = (TextView) newsView.findViewById(R.id.summary);
 			TextView index = (TextView) newsView.findViewById(R.id.index);
         	TextView link = (TextView) newsView.findViewById(R.id.link);
-        	WebView img = (WebView) newsView.findViewById(R.id.image);
+        	//WebView img = (WebView) newsView.findViewById(R.id.image);
+        	ImageView img = (ImageView) newsView.findViewById(R.id.image);
         	
     		newsView.setOnClickListener(new OnClickListener() {
     			public void onClick(View v) {
@@ -1242,19 +1294,21 @@ public class MainActivity extends Activity {
                 }
             });
     		
+    		img.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    		img.setImageDrawable(new BitmapDrawable(newsList.get(count).getBitmap()));
     		
     		// Fields
-    		img.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:" + bg_color + "\">" + newsList.get(count).getImg() + "</body>", "text/html", null, null);
-        	img.setVerticalScrollBarEnabled(false);
-    		img.setHorizontalFadingEdgeEnabled(false);
+    		//img.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:" + bg_color + "\">" + newsList.get(count).getImg() + "</body>", "text/html", null, null);
+        	//img.setVerticalScrollBarEnabled(false);
+    		//img.setHorizontalFadingEdgeEnabled(false);
     		authorDate.setText(newsList.get(count).getInfo());
     		summary.setText(newsList.get(count).getTitle());
     		link.setText(newsList.get(count).getLink());
     		index.setText(count + "");
     		
         	newsContainer.addView(newsView);
+        	newsContainer.addView(spacer);
 		}
-	
     }
     
     /********************************************************************
@@ -1496,20 +1550,6 @@ public class MainActivity extends Activity {
         */
     }
     
-    
-    /********************************************************************
-     * Method: removeSchedulerClass
-     * Purpose: removes schedulerClass
-    /*******************************************************************/
-    public void removeSchedulerClass(View v){
-    	LinearLayout parent = (LinearLayout) v.getParent().getParent().getParent();
-    	String removeID = (String) ((TextView) ((TableRow) v.getParent()).findViewById(R.id.className)).getText();
-    	parent.removeView(v);
-    	scheduler.getCurrentCourseList().remove(removeID);
-    	
-    }
-    
-    
     /********************************************************************
      * Method: addSchedulerClass
      * Purpose: adds a class to the scheduler screen and data
@@ -1523,36 +1563,28 @@ public class MainActivity extends Activity {
     	
     	this.scheduler.getCurrentCourseList().add(scheduler.getDynamicCourseIDs().get(classSpin.getSelectedItemPosition()));
     	
-    	TableLayout classCont = (TableLayout) inflater.inflate(R.layout.scheduler_class, null);
+    	RelativeLayout classCont = (RelativeLayout) inflater.inflate(R.layout.scheduler_class, null);
     	TextView className = (TextView) classCont.findViewById(R.id.className);
-    	TextView courseNumber = (TextView) classCont.findViewById(R.id.courseNumber);
+    	TextView classTitle = (TextView) classCont.findViewById(R.id.classTitle);
+    	//TextView courseNumber = (TextView) classCont.findViewById(R.id.courseNumber);
     	className.setText(scheduler.getDynamicCourseIDs().get(classSpin.getSelectedItemPosition()));
+    	classTitle.setText(scheduler.getDynamicCourseIDs().get(classSpin.getSelectedItemPosition())
+    			+ ":  " + scheduler.getDynamicCourseNames().get(classSpin.getSelectedItemPosition()));
     	
     	ImageView delete = (ImageView) classCont.findViewById(R.id.removeClass);
     	delete.setOnClickListener(new OnClickListener(){
     		public void onClick(View v){
     		    
-    			Button view = (Button) findViewById(R.id.viewSchedulesButton);
-    			view.setEnabled(scheduler.getCurrentCourseList().size() > 0);
-    			LinearLayout parent = (LinearLayout) v.getParent().getParent().getParent();
-    		    String removeID = (String) ((TextView) ((TableRow) v.getParent()).findViewById(R.id.className)).getText();
-    		    parent.removeView((TableLayout)v.getParent().getParent());
+    			LinearLayout parent = (LinearLayout) v.getParent().getParent();
+    		    String removeID = (String) ((TextView) ((RelativeLayout) v.getParent()).findViewById(R.id.className)).getText();
+    		    parent.removeView((RelativeLayout)v.getParent());
     		    scheduler.getCurrentCourseList().remove(removeID);
-    		    
-    		    // Renumber courses
-    		    LinearLayout container = (LinearLayout) findViewById(R.id.classContainer);
-    		    for(int i = 0; i < container.getChildCount(); i++){
-    		    	TableLayout child = (TableLayout) container.getChildAt(i);
-    		    	
-    		    	((TextView)child.findViewById(R.id.courseNumber)).setText("Course #" + (i+1));
-    		    }
-    		    
     		}
-    		
     	});
     	
     	view.setEnabled(true);
-    	courseNumber.setText("Course #" + scheduler.getCurrentCourseList().size());
+    	//courseNumber.setText("Course #" + scheduler.getCurrentCourseList().size());
+    	
     	container.addView(classCont);
     }
     
@@ -1564,7 +1596,6 @@ public class MainActivity extends Activity {
     public void librarySearch(View v){
     	
     	((LinearLayout) findViewById(R.id.libraryContainer)).removeAllViews();
-    	((Button) findViewById(R.id.loadMoreButton)).setVisibility(View.GONE);
 		
     	libraryTask = (LibraryTask) new LibraryTask().execute(lib);
     }
@@ -1799,10 +1830,10 @@ public class MainActivity extends Activity {
      * Task: EventArticleTask
      * Purpose: task to display an event article
     /*******************************************************************/
-    private class EventArticleTask extends AsyncTask<String, Void, String> {
+    private class EventArticleTask extends AsyncTask<String, Void, Event> {
     	
     	@Override
-        protected String doInBackground(String... params) {  
+        protected Event doInBackground(String... params) {  
     		
 			try {
 
@@ -1822,24 +1853,28 @@ public class MainActivity extends Activity {
 					events.getEvents().get(Integer.parseInt(params[2])).getEvents().get(Integer.parseInt(params[1])).setHTML(html);
 					events.getEvents().get(Integer.parseInt(params[2])).getEvents().get(Integer.parseInt(params[1])).setIsLoaded(true);
 					
-					return html;
+					return events.getEvents().get(Integer.parseInt(params[2])).getEvents().get(Integer.parseInt(params[1]));
 				}
 				
-				else return events.getEvents().get(Integer.parseInt(params[2])).getEvents().get(Integer.parseInt(params[1])).getHTML();
+				else return events.getEvents().get(Integer.parseInt(params[2])).getEvents().get(Integer.parseInt(params[1]));
 			}
 			
 			catch (Exception e){ e.printStackTrace(); return null;}
         }      
 
     	@Override
-        protected void onPostExecute(String html) {
+        protected void onPostExecute(Event event) {
         	
-        	if(html != null){
+        	if(event != null){
         		
         		// Show
         		setContentView(R.layout.events_article);
         		WebView webView = (WebView) findViewById(R.id.webView);
-        		webView.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#7F95FA\">" + html + "</body>", "text/html", null, null);
+        		webView.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#" + BG_WEB_COLOR + "\">" + event.getHTML() + "</body>", "text/html", null, null);
+        		
+        		// Set title
+        		TextView title = (TextView) findViewById(R.id.event_title);
+        		title.setText(event.getSummary());;
         		
         		last_view.add(0, EVENTS);
         	}
@@ -1899,7 +1934,7 @@ public class MainActivity extends Activity {
         		// Show
         		setContentView(R.layout.news_article);
         		WebView webView = (WebView) findViewById(R.id.webView);
-        		webView.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#7F95FA\">" + html + "</body>", "text/html", null, null);
+        		webView.loadDataWithBaseURL("http://kettering.edu", "<body style=\"background:#" + BG_WEB_COLOR+ "\">" + html + "</body>", "text/html", null, null);
         		
         		last_view.add(0, NEWS);
         	}
@@ -2251,11 +2286,15 @@ public class MainActivity extends Activity {
     	        	
     	        	latestTimes[i-1] = latestTime;
     	        	earliestTimes[i-1] = earliestTime;
-    	        	indexerList.add(i + "/" + workingSchedules.size());
+    	        	indexerList.add(i + " / " + workingSchedules.size());
     	        }
     	        
     	        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(c,android.R.layout.simple_spinner_item, indexerList);
+    	        //spinnerAdapter.setDropDownViewResource(R.layout.schedule_index);
     	        schedulerIndexer.setAdapter(spinnerAdapter);
+    	        
+    	        //TextView scheduleMax = (TextView) findViewById(R.id.scheduleMax);
+    	        //scheduleMax.setText(" / " + workingSchedules.size());
     	        
     	        SchedulerPagerAdapter adapter = new SchedulerPagerAdapter(workingSchedules, latestTimes, earliestTimes);
     	        adapter.setContext(c);
@@ -2729,7 +2768,7 @@ class SchedulerPagerAdapter extends PagerAdapter {
     	
     	
     	// Set course info. Secretly hide additional info in hint.
-    	current.setText(Html.fromHtml(course.getCourse().getCourseID() + "</b><br>" + course.getCourse().getLocation().replaceAll("Academic\\sBuilding", "AB") + "<br>" + course.getCourse().getTime()));
+    	current.setText(Html.fromHtml(course.getCourse().getCourseID() + "</b><br>CRN: " + course.getCourse().getCRN() + "<br>" + course.getCourse().getTime()));
     	current.setHint(Html.fromHtml(course.getCourse().getCourseName() + "</b><br>" + course.getCourse().getInstructor()));
     	current.setBackgroundColor(Color.parseColor(course.getCourse().getColor()));
     	

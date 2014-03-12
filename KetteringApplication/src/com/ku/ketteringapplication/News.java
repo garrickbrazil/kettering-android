@@ -1,5 +1,23 @@
+/*
+ 	This file is part of KetteringApplication.
+
+	KetteringApplication is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    KetteringApplication is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with KetteringApplication.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.ku.ketteringapplication;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +25,9 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 
 /********************************************************************
@@ -46,7 +67,16 @@ public class News {
 		catch(Exception e){ this.news = new ArrayList<NewsItem>(); this.isLoaded = false; return false;}
 	}
 	
-	
+	public static Bitmap loadBitmap(String url) {
+		
+		String urldisplay = url;
+        Bitmap mIcon11 = null;
+        try {
+            InputStream in = new java.net.URL(urldisplay).openStream();
+            mIcon11 = BitmapFactory.decodeStream(in);
+        } catch (Exception e) { e.printStackTrace(); }
+        return mIcon11;
+	}
 	/********************************************************************
 	 * Method: storeArticles
 	 * Purpose: internally stores articles into memory
@@ -62,6 +92,7 @@ public class News {
 					
 					String link = "https://www.kettering.edu" + article.getElementsByTag("h3").get(0).getElementsByTag("a").attr("href");
 					Element img = pictureObj.get(0).getElementsByTag("img").get(0);  img.attr("style", "width:100%; height:100%");
+					Bitmap bitmap = loadBitmap(img.attr("src"));
 					String imgStr = img.toString();
 					String title = article.getElementsByTag("h3").text();
 					String info = "";
@@ -77,7 +108,7 @@ public class News {
 					}
 					
 					// Add
-					this.news.add(new NewsItem(title, info, link, imgStr));
+					this.news.add(new NewsItem(title, info, link, imgStr, bitmap));
 				}	
 			}
 			
@@ -131,13 +162,13 @@ class NewsItem{
 	private String info;
 	private boolean isLoaded;
 	private String html;
-	
+	private Bitmap bitmap;
 	
 	/********************************************************************
 	 * Constructor: NewsItem
 	 * Purpose: creates one news article
 	/*******************************************************************/
-	public NewsItem(String title, String info, String link, String imgStr){
+	public NewsItem(String title, String info, String link, String imgStr, Bitmap bitmap){
 		
 		// Set properties
 		this.title = title;
@@ -146,6 +177,8 @@ class NewsItem{
 		this.img = imgStr;
 		this.isLoaded = false;
 		this.html = "";
+		this.bitmap = bitmap;
+		
 	}
 	
 	
@@ -164,6 +197,7 @@ class NewsItem{
 	public String getImg(){ return this.img; }
 	public String getHTML(){ return this.html; }
 	public boolean getIsLoaded(){ return this.isLoaded; }
+	public Bitmap getBitmap(){ return this.bitmap; }
 	
 	/********************************************************************
 	 * Mutators: setIsLoaded, setHTML

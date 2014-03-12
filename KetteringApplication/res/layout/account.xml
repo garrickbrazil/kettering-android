@@ -65,9 +65,7 @@
 						    android:layout_width="match_parent"
 						    android:layout_height="wrap_content"
 						    android:gravity="center_horizontal"
-						    android:layout_marginLeft="10dp"
-							android:layout_marginRight="10dp" 
-						    android:background="@layout/table_even_top" >
+						    android:background="@color/odd" >
 							<TextView
 							    android:text="Account Balance"
 							    android:layout_marginLeft="10dp"
@@ -98,9 +96,7 @@
 						    android:layout_width="match_parent"
 						    android:layout_height="wrap_content"
 						    android:gravity="center_horizontal"
-						    android:layout_marginLeft="10dp"
-							android:layout_marginRight="10dp" 
-						    android:background="@color/even" >
+						    android:background="@color/odd" >
 							<TextView
 							    android:text="Charges"
 					            android:textStyle="bold"
@@ -131,9 +127,7 @@
 					        android:layout_width="match_parent"
 					        android:layout_height="wrap_content"
 					        android:gravity="center_horizontal"
-					        android:layout_marginLeft="10dp"
-					   		android:layout_marginRight="10dp"
-					        android:background="@layout/table_even_bottom" >
+					        android:background="@color/odd" >
 							<TextView
 					            android:text="Payments"
 					            android:textStyle="bold"

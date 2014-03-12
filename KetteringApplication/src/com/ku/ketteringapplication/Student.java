@@ -1,3 +1,20 @@
+/*
+ 	This file is part of KetteringApplication.
+
+	KetteringApplication is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    KetteringApplication is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with KetteringApplication.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.ku.ketteringapplication;
 
 import java.util.ArrayList;
@@ -176,21 +193,22 @@ public class Student {
 		
 		try{
 			
-			HttpGet initialLoad = new HttpGet("https://blackboard.kettering.edu/webapps/login/");
-			HttpPost login = new HttpPost("https://blackboard.kettering.edu/webapps/login/");
+			HttpGet initialLoad = new HttpGet("https://kettering.blackboard.com/webapps/login/");
+			HttpPost login = new HttpPost("https://kettering.blackboard.com/webapps/login/");
+			
 			
 			// Parameters
 			List <NameValuePair> parameters = new ArrayList <NameValuePair>();
 	        parameters.add(new BasicNameValuePair("user_id", this.username));
-	        parameters.add(new BasicNameValuePair("password", ""));
+	        parameters.add(new BasicNameValuePair("password", this.password));
 	        parameters.add(new BasicNameValuePair("login", "Login"));
 	        parameters.add(new BasicNameValuePair("action", "login"));
-	        parameters.add(new BasicNameValuePair("remote-user", ""));
-	        parameters.add(new BasicNameValuePair("new_loc", "\u00C2\u00A0"));
-	        parameters.add(new BasicNameValuePair("auth_type", ""));
-	        parameters.add(new BasicNameValuePair("one_time_token", ""));
-	        parameters.add(new BasicNameValuePair("encoded_pw", Base64.encodeToString(this.password.getBytes(), Base64.DEFAULT)));
-	        parameters.add(new BasicNameValuePair("encoded_pw_unicode", ""));
+	        //parameters.add(new BasicNameValuePair("remote-user", ""));
+	        parameters.add(new BasicNameValuePair("new_loc", ""));//\u00C2\u00A0"));
+	        //parameters.add(new BasicNameValuePair("auth_type", ""));
+	        //parameters.add(new BasicNameValuePair("one_time_token", ""));
+	        //parameters.add(new BasicNameValuePair("encoded_pw", new Base64().encodeAsString(this.password.getBytes())));
+	        //parameters.add(new BasicNameValuePair("encoded_pw_unicode", ""));
 	        login.setEntity(new UrlEncodedFormEntity(parameters));
 			
 	        
@@ -294,14 +312,15 @@ public class Student {
 		
 		try{
 			
-			HttpGet grade = new HttpGet("https://blackboard.kettering.edu/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_104_1&forwardUrl=detach_module%2F_573_1%2F");
+			//HttpGet grade = new HttpGet("https://blackboard.kettering.edu/webapps/portal/execute/tabs/tabAction?tab_tab_group_id=_104_1&forwardUrl=detach_module%2F_573_1%2F");
+			HttpPost grade = new HttpPost("https://kettering.blackboard.com/webapps/portal/execute/tabs/tabAction?action=refreshAjaxModule&modId=_19_1&tabId=_1_1&tab_tab_group_id=_1_1");
 			
 			// Execute
 		    HttpResponse response = this.clientBlackboard.execute(grade);
 			String html = HTMLParser.parse(response);
 			
 			// Class grades
-			Elements classGrades = Jsoup.parse(html).getElementsByTag("td");
+			Elements classGrades = Jsoup.parse(html.replace("<?xml version=\"1.0\"?>", "").replace("<contents><![CDATA[", "").replace("]]></contents>", "")).getElementsByTag("td");
 			if(classGrades.size() > 0) classGrades.remove(classGrades.size() -1);
 			
 			// Store grades
@@ -311,7 +330,7 @@ public class Student {
 				if(classGrades.get(i*2 +1).childNodes().size() > 0 && classGrades.get(i*2 +1).childNode(0).childNodes().size() > 0){
 					
 					// Parameters
-					String gradeLink = "https://blackboard.kettering.edu" + classGrades.get(i*2+1).childNode(0).childNode(0).attr("href");
+					String gradeLink = "https://kettering.blackboard.com" + classGrades.get(i*2+1).childNode(0).childNode(0).attr("href");
 					String className = classGrades.get(i*2).text();
 					String titleTotal = classGrades.get(i*2+1).child(0).child(0).text();
 					boolean valid = className.contains("WINTER") || className.contains("SPRING") || className.contains("SUMMER") || className.contains("FALL"); 

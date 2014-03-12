@@ -11,11 +11,17 @@
     <string name="scheduleRow">15px</string>
     <string name="scheduleRowHeader">20dp</string>
     <string name="iconCD">Icon</string>
+    <string name="searchCD">Search</string>
+    <string name="downloadCD">Download</string>
+    <string name="addCD">Add</string>
+    <string name="deleteCD">Delete</string>
+    <string name="schedule_viewer">Schedule</string>
     <string name="backCD">Go Back</string>
     <string name="homeCD">Go to Home</string>
     <string name="eventsTitle">Campus Events</string>
+    <string name="newsTitle">Campus News</string>
     <string name="loadMessage">Load More</string>
-    
+    <string name="scheduler_title">Scheduler</string>
     <string name="search_type_prompt">Type</string>
     <string-array name="search_options">
         <item>Faculty</item>
@@ -32,13 +38,14 @@
     </string-array>
     
     <!--  Colors -->
+    <!--  odd7F95FA, even6F8AFF, start#303989 -->
     <color name="scheduleHeader">#000000</color>
     <color name="separator">#000000</color>
     <color name="startColor">#303989</color>
     <color name="endColor">#3D49B2</color>
     <color name="strokeColor">#000000</color>
-    <color name="odd">#7F95FA</color>
-    <color name="even">#6F8AFF</color>
+    <color name="odd">#7092d8</color>
+    <color name="even">#303989</color>
     <color name="tableFontColor">#000000</color>
 
 </resources>

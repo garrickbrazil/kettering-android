@@ -67,14 +67,14 @@
 		</EditText>
       	
 	    <Spinner
-        android:id="@+id/type"
-        android:layout_width="0dp"
-        android:textSize="13dp"
-        android:layout_weight="38"
-        android:layout_height="wrap_content"
-        android:entries="@array/search_options"
-        android:prompt="@string/search_type_prompt" />
-	    
+	        android:id="@+id/type"
+	        android:layout_width="0dp"
+	        android:textSize="13dp"
+	        android:layout_weight="38"
+	        android:layout_height="wrap_content"
+	        android:entries="@array/search_options"
+	        android:prompt="@string/search_type_prompt" />
+
     	<ImageView
 	       android:id="@+id/searchButton"
 	       android:layout_width="30dp"
